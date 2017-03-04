@@ -1,7 +1,11 @@
 # GrovePi
 
 Use the [GrovePi](https://www.dexterindustries.com/grovepi/) and sensors in Elixir
-on a Raspberry Pi.
+on a Raspberry Pi. If you have a Beaglebone Green or other port that has direct
+access to sensors (rather than going through a GrovePi), take a look at
+[nerves_grove](https://github.com/bendiken/nerves_grove). This library will
+likely go through many changes in the coming months and possibly get merged into
+`nerves_grove` should there be enough overlap.
 
 ## Installation
 
