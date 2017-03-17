@@ -1,7 +1,7 @@
 defmodule GrovePi.Buttons do
   def start_link(grove_pi_pid) do
     with {:ok, _} <- GrovePi.Buttons.Supervisor.start_link(grove_pi_pid),
-         {:ok, _} <- GrovePi.Buttons.Registry.start_link
+         {:ok, _} <- GrovePi.Buttons.Registry.start_link,
          do: :ok
   end
 
