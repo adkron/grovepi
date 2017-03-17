@@ -11,6 +11,8 @@ defmodule GrovePi.Button.Handler do
 
   def init([sup_pid, grove, pin]) do
     state = %State{pin: pin, grove: grove}
+            |> update_value()
+
     pid = self()
 
     Task.start fn ->
@@ -41,6 +43,6 @@ defmodule GrovePi.Button.Handler do
   def update_value(state) do
     new_value = GrovePi.Digital.read(state.grove, state.pin)
     GrovePi.Buttons.notify_change(state.pin, state.value, new_value)
-     %{state | value: new_value}
+    %{state | value: new_value}
   end
 end
