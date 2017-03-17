@@ -6,6 +6,6 @@ defmodule GrovePi.Button.Poller do
   def poll(handler_pid) do
     :timer.sleep 100
     GrovePi.Button.Handler.notify_state(handler_pid)
-    loop(handler_pid)
+    poll(handler_pid)
   end
 end
