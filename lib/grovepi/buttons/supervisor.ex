@@ -12,7 +12,7 @@ defmodule GrovePi.Buttons.Supervisor do
       supervisor(GrovePi.Button.Supervisor, [grove_pi_pid])
     ]
 
-    supervise(children, strategy, :simple_one_for_one)
+    supervise(children, strategy: :simple_one_for_one)
   end
 
   def add(pin, name \\ @name) do
