@@ -23,5 +23,5 @@ defmodule GrovePi.Buttons do
     GrovePi.Buttons.Registry.dispatch({:released, pin})
   end
 
-  def notify_change(_pin, _current_value, _current_value), do: :ok
+  def notify_change(_pin, current_value, current_value), do: :ok
 end
