@@ -16,6 +16,6 @@ defmodule GrovePi.Buttons.Supervisor do
   end
 
   def add(pin, name \\ @name) do
-    start_child(name, [pin])
+    Supervisor.start_child(name, [pin])
   end
 end
