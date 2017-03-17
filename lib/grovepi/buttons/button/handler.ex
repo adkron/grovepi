@@ -41,6 +41,6 @@ defmodule GrovePi.Button.Handler do
   def update_value(state) do
     new_value = GrovePi.Digital.read(state.grove, state.pin)
     GrovePi.Buttons.notify_change(state.value, new_value)
-     %{state | value: value}
+     %{state | value: new_value}
   end
 end
