@@ -10,7 +10,7 @@ defmodule GrovePi.Button.Supervisor do
       worker(GrovePi.Button.Handler, [self(), grove_pid, pin])
     ]
 
-    supervise(children, strategy: :one_for_rest)
+    supervise(children, strategy: :rest_for_one)
   end
 
   def start_poller(sup_pid, handler_pid) do
