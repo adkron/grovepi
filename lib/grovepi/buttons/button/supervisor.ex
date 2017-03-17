@@ -1,7 +1,7 @@
 defmodule GrovePi.Button.Supervisor do
   use Supervisor
 
-  def start_link(grove_pi_pid, pin) do
+  def start_link(grove_pid, pin) do
     Supervisor.start_link(__MODULE__, [grove_pid, pin])
   end
 
