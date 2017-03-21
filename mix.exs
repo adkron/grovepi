@@ -30,7 +30,7 @@ defmodule GrovePi.Mixfile do
   end
 
   defp deps do
-    [{:elixir_ale,  "~> 0.5.7"},
+    [{:elixir_ale,  "~> 0.5.7", only: [:prod]},
      {:dialyxir,    ">= 0.0.0", only: [:dev, :test]},
      {:ex_doc,      ">= 0.0.0", only: :dev}]
   end
