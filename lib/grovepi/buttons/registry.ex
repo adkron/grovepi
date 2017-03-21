@@ -3,6 +3,7 @@ defmodule GrovePi.Buttons.Registry do
     Registry.start_link(:duplicate, __MODULE__, partitions: System.schedulers_online)
   end
 
+  @spec dispatch(GrovePi.Buttons.message) :: :ok
   def dispatch({:released, _pin} = message), do: do_dispatch(message)
   def dispatch({:pressed, _pin} = message), do: do_dispatch(message)
 
@@ -12,6 +13,7 @@ defmodule GrovePi.Buttons.Registry do
     end
   end
 
+  @spec register(GrovePi.Buttons.message) :: {:ok, pid} | {:error, {:already_registered, pid}}
   def register({:pressed, _pin} = message), do: do_register(message)
   def register({:released, _pin} = message), do: do_register(message)
 

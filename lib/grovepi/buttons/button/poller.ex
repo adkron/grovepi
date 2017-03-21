@@ -1,4 +1,6 @@
 defmodule GrovePi.Button.Poller do
+
+  @spec start_link(pid) :: {:ok, pid}
   def start_link(handler_pid) do
     Task.start_link(fn -> poll(handler_pid) end)
   end
