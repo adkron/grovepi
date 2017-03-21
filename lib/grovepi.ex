@@ -6,12 +6,13 @@ defmodule GrovePi do
   """
 
   @grovepi_address 0x04
+  @i2c Application.get_env(:grovepi, :i2c)
 
   @doc """
   """
   @spec start_link(byte) :: {:ok, pid} | {:error, any}
   def start_link(address \\ @grovepi_address) when is_integer(address) do
-    I2c.start_link("i2c-1", address)
+    @i2c.start_link("i2c-1", address)
   end
 
   @doc """
@@ -30,7 +31,7 @@ defmodule GrovePi do
   """
   @spec send_request(pid, binary) :: :ok
   def send_request(pid, message) when byte_size(message) == 4 do
-    I2c.write(pid, message)
+    @i2c.write(pid, message)
   end
 
   @doc """
@@ -38,6 +39,6 @@ defmodule GrovePi do
   not normally called directly.
   """
   def get_response(pid, len) do
-    I2c.read(pid, len)
+    @i2c.read(pid, len)
   end
 end

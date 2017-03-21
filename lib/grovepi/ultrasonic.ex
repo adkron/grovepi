@@ -12,13 +12,15 @@ defmodule GrovePi.Ultrasonic do
 
   """
 
+  @i2c Application.get_env(:grovepi, :i2c)
+
   def read_distance(pid, pin) do
-    :ok = I2c.write(pid, <<7, pin, 0, 0>>)
+    :ok = @i2c.write(pid, <<7, pin, 0, 0>>)
 
     # Firmware waits for 50 ms to read sensor
     Process.sleep(60)
 
-    <<_, distance::big-integer-size(16)>> = I2c.read(pid, 3)
+    <<_, distance::big-integer-size(16)>> = @i2c.read(pid, 3)
     distance
   end
 

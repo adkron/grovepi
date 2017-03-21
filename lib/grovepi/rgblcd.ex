@@ -4,18 +4,19 @@ defmodule GrovePi.RGBLCD do
 
   @rgb_address  0x62
   @text_address 0x3e
+  @i2c Application.get_env(:grovepi, :i2c)
 
   # Currently this is directly translated from Python
   # NOTE: Review datasheet, since this does not seem like
   #       the most efficient way of updating the display.
 
   def set_rgb(pid, r, g, b) do
-    I2c.write_device(pid, @rgb_address, <<0, 0>>)
-    I2c.write_device(pid, @rgb_address, <<1, 0>>)
-    I2c.write_device(pid, @rgb_address, <<8, 0xaa>>)
-    I2c.write_device(pid, @rgb_address, <<4, r>>)
-    I2c.write_device(pid, @rgb_address, <<3, g>>)
-    I2c.write_device(pid, @rgb_address, <<2, b>>)
+    @i2c.write_device(pid, @rgb_address, <<0, 0>>)
+    @i2c.write_device(pid, @rgb_address, <<1, 0>>)
+    @i2c.write_device(pid, @rgb_address, <<8, 0xaa>>)
+    @i2c.write_device(pid, @rgb_address, <<4, r>>)
+    @i2c.write_device(pid, @rgb_address, <<3, g>>)
+    @i2c.write_device(pid, @rgb_address, <<2, b>>)
   end
 
   def set_text(pid, text) do
@@ -33,11 +34,11 @@ defmodule GrovePi.RGBLCD do
     send_chars(pid, rest)
   end
   defp send_chars(pid, <<c, rest::binary>>) do
-    I2c.write_device(pid, @text_address, <<0x40, c>>)
+    @i2c.write_device(pid, @text_address, <<0x40, c>>)
     send_chars(pid, rest)
   end
 
   defp send_text_cmd(pid, cmd) do
-    I2c.write_device(pid, @text_address, <<0x80, cmd>>)
+    @i2c.write_device(pid, @text_address, <<0x80, cmd>>)
   end
 end
