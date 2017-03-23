@@ -1,4 +1,32 @@
 defmodule GrovePi.Buttons do
+  @moduledoc """
+  Listen for button presses or releases
+
+  Example usage:
+
+  iex> {:ok, pid} = GrovePi.start_link
+  {:ok, #PID<0.172.0>}
+
+  iex> GrovePi.Buttons.start_link(pid)
+  :ok
+
+  iex> pin = 2
+
+  iex> GrovePi.Buttons.add(pin)
+  {:ok, #PID<0.187.0>}
+
+  iex> GrovePi.Buttons.register({:pressed, pin})
+  {:ok, #PID<0.178.0>}
+
+  iex> GrovePi.Buttons.register({:released, pin})
+  {:ok, #PID<0.178.0>}
+
+  #press and release a button attached to pin 2
+
+  iex> flush()
+  {:pressed, 2}
+  {:released, 2}
+  """
 
   @type event :: :pressed | :released
   @type pin :: integer
