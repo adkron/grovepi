@@ -1,4 +1,7 @@
 defmodule GrovePi.Buttons do
+  use Supervisor
+  @name __MODULE__
+
   @moduledoc """
   Listen for button presses or releases
 
@@ -32,11 +35,19 @@ defmodule GrovePi.Buttons do
   @type pin :: integer
   @type message :: {event, pin}
 
-  @spec start_link(pid) :: Supervisor.on_start
-  def start_link(grove_pi_pid) do
-    with {:ok, _} <- GrovePi.Buttons.Supervisor.start_link(grove_pi_pid),
-         {:ok, _} <- GrovePi.Buttons.Registry.start_link,
-         do: :ok
+  @spec start_link(pid, Supervisor.options) :: Supervisor.on_start
+  def start_link(grove_pi_pid, opts \\ []) do
+    opts = Keyword.put_new(opts, :name, @name)
+    Supervisor.start_link(__MODULE__, [grove_pi_pid], opts)
+  end
+
+  def init([grove_pi_pid]) do
+    children = [
+      supervisor(GrovePi.Buttons.Registry, []),
+      supervisor(GrovePi.Buttons.Supervisor, [grove_pi_pid]),
+    ]
+
+    supervise(children, strategy: :one_for_one)
   end
 
   @spec add(pin) :: Supervisor.on_start
