@@ -29,6 +29,11 @@ defmodule GrovePi.Buttons do
   iex> flush()
   {:pressed, 2}
   {:released, 2}
+
+  Alternatively an mfa maybe registered instead of using messages the pid
+  of the registering process will be added as the first argument to the
+  function
+  iex> GrovePi.Buttons.register({:released, pin}, {module, :function, [args]})
   """
 
   @type event :: :pressed | :released
@@ -58,6 +63,11 @@ defmodule GrovePi.Buttons do
   @spec register(message) :: {:ok, pid} | {:error, {:already_registered, pid}}
   def register({event, pin}) do
     GrovePi.Buttons.Registry.register({event, pin})
+  end
+
+  @spec register(message, mfa) :: {:ok, pid} | {:error, {:already_registered, pid}}
+  def register({event, pin}, mfa) do
+    GrovePi.Buttons.Registry.register({event, pin}, mfa)
   end
 
   @spec notify_change(pin, GrovePi.Button.Handler.change) :: :ok

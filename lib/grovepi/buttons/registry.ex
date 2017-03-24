@@ -4,20 +4,28 @@ defmodule GrovePi.Buttons.Registry do
   end
 
   @spec dispatch(GrovePi.Buttons.message) :: :ok
-  def dispatch({:released, _pin} = message), do: do_dispatch(message)
-  def dispatch({:pressed, _pin} = message), do: do_dispatch(message)
-
-  defp do_dispatch(message) do
+  def dispatch(message) do
     Registry.dispatch __MODULE__, message, fn(listeners) ->
-      for {pid, _} <- listeners, do: send(pid, message)
+      for {pid, args} <- listeners, do: _dispatch(pid, message, args)
     end
   end
 
-  @spec register(GrovePi.Buttons.message) :: {:ok, pid} | {:error, {:already_registered, pid}}
-  def register({:pressed, _pin} = message), do: do_register(message)
-  def register({:released, _pin} = message), do: do_register(message)
+  defp _dispatch(pid, message, :ok) do
+    send(pid, message)
+  end
 
-  defp do_register(message) do
-    Registry.register(__MODULE__, message, [])
+  defp _dispatch(pid, message, {module, function, args}) do
+    apply(module, function, [pid | args])
+  end
+
+  @spec register(GrovePi.Buttons.message) :: {:ok, pid} | {:error, {:already_registered, pid}}
+  def register(message), do: _register(message, :ok)
+
+  @spec register(GrovePi.Buttons.message, mfa) :: {:ok, pid} | {:error, {:already_registered, pid}}
+  def register(message, mfa), do: _register(message, mfa)
+
+  @spec _register(GrovePi.Buttons.message, :ok | mfa) :: {:ok, pid} | {:error, {:already_registered, pid}}
+  defp _register(message, event) do
+    Registry.register(__MODULE__, message, event)
   end
 end

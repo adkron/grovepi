@@ -18,7 +18,7 @@ defmodule GrovePi.ButtonsTest do
     GrovePi.Buttons.register({:pressed, pin})
     GrovePi.I2C.add_response(grove, @pressed)
 
-    assert_receive {:pressed, pin}, 300
+    assert_receive {:pressed, ^pin}, 300
   end
 
   test "registering for a released event receives released messages",
@@ -28,6 +28,30 @@ defmodule GrovePi.ButtonsTest do
     GrovePi.Buttons.register({:released, pin})
     GrovePi.I2C.add_responses(grove, [@pressed, @released])
 
-    assert_receive {:released, pin}, 300
+    assert_receive {:released, ^pin}, 300
+  end
+
+  def resend(pid, argument) do
+    send(pid, {:called_with, argument})
+  end
+
+  test "registering for pressed event with {module, function, arguement}",
+  %{grove: grove} do
+    pin = 5
+    GrovePi.Buttons.add(pin)
+    GrovePi.Buttons.register({:pressed, pin}, {__MODULE__, :resend, ["argument"]})
+    GrovePi.I2C.add_response(grove, @pressed)
+
+    assert_receive {:called_with, "argument"}, 300
+  end
+
+  test "registering for released event with {module, function, arguement}",
+  %{grove: grove} do
+    pin = 5
+    GrovePi.Buttons.add(pin)
+    GrovePi.Buttons.register({:released, pin}, {__MODULE__, :resend, ["argument"]})
+    GrovePi.I2C.add_responses(grove, [@pressed, @released])
+
+    assert_receive {:called_with, "argument"}, 300
   end
 end
