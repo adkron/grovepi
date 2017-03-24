@@ -60,13 +60,8 @@ defmodule GrovePi.Buttons do
     GrovePi.Buttons.Supervisor.add(pin)
   end
 
-  @spec register(message) :: {:ok, pid} | {:error, {:already_registered, pid}}
-  def register(message) do
-    GrovePi.Buttons.Registry.register(message)
-  end
-
-  @spec register(message, mfa) :: {:ok, pid} | {:error, {:already_registered, pid}}
-  def register(message, mfa) do
+  @spec register(message, :ok | mfa) :: {:ok, pid} | {:error, {:already_registered, pid}}
+  def register(message, mfa \\ :ok) do
     GrovePi.Buttons.Registry.register(message, mfa)
   end
 
