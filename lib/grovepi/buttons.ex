@@ -61,13 +61,13 @@ defmodule GrovePi.Buttons do
   end
 
   @spec register(message) :: {:ok, pid} | {:error, {:already_registered, pid}}
-  def register({event, pin}) do
-    GrovePi.Buttons.Registry.register({event, pin})
+  def register(message) do
+    GrovePi.Buttons.Registry.register(message)
   end
 
   @spec register(message, mfa) :: {:ok, pid} | {:error, {:already_registered, pid}}
-  def register({event, pin}, mfa) do
-    GrovePi.Buttons.Registry.register({event, pin}, mfa)
+  def register(message, mfa) do
+    GrovePi.Buttons.Registry.register(message, mfa)
   end
 
   @spec notify_change(pin, GrovePi.Button.Handler.change) :: :ok
