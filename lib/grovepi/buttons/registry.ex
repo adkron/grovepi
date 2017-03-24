@@ -14,18 +14,12 @@ defmodule GrovePi.Buttons.Registry do
     send(pid, message)
   end
 
-  defp _dispatch(pid, message, {module, function, args}) do
+  defp _dispatch(pid, _message, {module, function, args}) do
     apply(module, function, [pid | args])
   end
 
-  @spec register(GrovePi.Buttons.message) :: {:ok, pid} | {:error, {:already_registered, pid}}
-  def register(message), do: _register(message, :ok)
-
-  @spec register(GrovePi.Buttons.message, mfa) :: {:ok, pid} | {:error, {:already_registered, pid}}
-  def register(message, mfa), do: _register(message, mfa)
-
-  @spec _register(GrovePi.Buttons.message, :ok | mfa) :: {:ok, pid} | {:error, {:already_registered, pid}}
-  defp _register(message, event) do
+  @spec register(GrovePi.Buttons.message, :ok | mfa) :: {:ok, pid} | {:error, {:already_registered, pid}}
+  def register(message, event \\ :ok) do
     Registry.register(__MODULE__, message, event)
   end
 end
