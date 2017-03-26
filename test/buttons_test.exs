@@ -31,6 +31,19 @@ defmodule GrovePi.ButtonsTest do
     assert_receive {:released, ^pin}, 300
   end
 
+  test "recovers from I2C error",
+  %{grove: grove} do
+    pin = 5
+    GrovePi.Buttons.add(pin)
+    GrovePi.Buttons.register({:released, pin})
+    GrovePi.I2C.add_responses(grove, [{:error, :i2c_write_failed}])
+
+    Process.sleep 100
+
+    GrovePi.I2C.add_responses(grove, [@pressed, @released])
+    assert_receive {:released, ^pin}, 300
+  end
+
   def resend(pid, argument) do
     send(pid, {:called_with, argument})
   end

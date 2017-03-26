@@ -8,27 +8,18 @@ defmodule GrovePi.Button.Handler do
     defstruct [:pin, :grove, :value]
   end
 
-  @spec start_link(pid, pid, GrovePi.Buttons.pin) :: Supervisor.on_start
-  def start_link(sup_pid, grove, pin) do
-    GenServer.start_link(__MODULE__, [sup_pid, grove, pin])
+  @spec start_link(pid, GrovePi.Buttons.pin) :: Supervisor.on_start
+  def start_link(grove, pin) do
+    GenServer.start_link(__MODULE__, [grove, pin])
   end
 
-  def init([sup_pid, grove, pin]) do
+  def init([grove, pin]) do
     state = %State{pin: pin, grove: grove}
             |> update_value()
 
-    pid = self()
-
-    Task.start fn ->
-      GrovePi.Button.Supervisor.start_poller(sup_pid, pid)
-    end
+    {:ok, _} = :timer.send_interval(100, :poll_button)
 
     {:ok, state}
-  end
-
-  @spec notify_state(GenServer.server) :: :ok
-  def notify_state(server) do
-    GenServer.cast(server, {:notify_state})
   end
 
   @spec read(GenServer.server) :: level
@@ -36,14 +27,14 @@ defmodule GrovePi.Button.Handler do
     GenServer.call(server, {:read})
   end
 
-  def handle_cast({:notify_state}, state) do
-    new_state = update_value(state)
-    {:noreply, new_state}
-  end
-
   def handle_call({:read}, _from, state) do
     new_state = update_value(state)
     {:reply, new_state.value, state}
+  end
+
+  def handle_info(:poll_button, state) do
+    new_state = update_value(state)
+    {:noreply, new_state}
   end
 
   @spec update_value(State) ::State
