@@ -4,6 +4,8 @@ defmodule GrovePi.Button do
   @type level :: 1 | 0
   @type change :: {level, level}
 
+  @poll_interval 100
+
   defmodule State do
     defstruct [:pin, :grove, :value]
   end
@@ -17,7 +19,7 @@ defmodule GrovePi.Button do
     state = %State{pin: pin, grove: grove}
             |> update_value()
 
-    {:ok, _} = :timer.send_interval(100, :poll_button)
+    {:ok, _} = :timer.send_interval(@poll_interval, :poll_button)
 
     {:ok, state}
   end
