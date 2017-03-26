@@ -8,14 +8,9 @@ defmodule GrovePi.Button.Supervisor do
 
   def init([grove_pid, pin]) do
     children = [
-      worker(GrovePi.Button.Handler, [self(), grove_pid, pin])
+      worker(GrovePi.Button.Handler, [grove_pid, pin])
     ]
 
-    supervise(children, strategy: :rest_for_one)
-  end
-
-  @spec start_link(pid, GrovePi.Buttons.pin) :: Supervisor.on_start_child
-  def start_poller(sup_pid, handler_pid) do
-    Supervisor.start_child(sup_pid, worker(GrovePi.Button.Poller, [handler_pid]))
+    supervise(children, strategy: :one_for_one)
   end
 end
