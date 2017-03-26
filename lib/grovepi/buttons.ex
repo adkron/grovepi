@@ -65,7 +65,7 @@ defmodule GrovePi.Buttons do
     GrovePi.Buttons.Registry.register(message, mfa)
   end
 
-  @spec notify_change(pin, GrovePi.Button.Handler.change) :: :ok
+  @spec notify_change(pin, GrovePi.Button.change) :: :ok
   def notify_change(pin, {last_value, 1}) when last_value != 1 do
     GrovePi.Buttons.Registry.dispatch({:pressed, pin})
   end

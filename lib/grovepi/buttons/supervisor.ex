@@ -10,7 +10,7 @@ defmodule GrovePi.Buttons.Supervisor do
 
   def init([grove_pi_pid]) do
     children = [
-      supervisor(GrovePi.Button.Supervisor, [grove_pi_pid]),
+      worker(GrovePi.Button, [grove_pi_pid]),
     ]
 
     supervise(children, strategy: :simple_one_for_one, restart: :transient)

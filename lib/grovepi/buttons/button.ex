@@ -1,4 +1,4 @@
-defmodule GrovePi.Button.Handler do
+defmodule GrovePi.Button do
   use GenServer
 
   @type level :: 1 | 0
