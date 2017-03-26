@@ -31,6 +31,7 @@ defmodule GrovePi.ButtonsTest do
     assert_receive {:released, ^pin}, 300
   end
 
+  @tag :capture_log
   test "recovers from I2C error",
   %{grove: grove} do
     pin = 5
