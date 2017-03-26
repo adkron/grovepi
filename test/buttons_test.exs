@@ -4,7 +4,7 @@ defmodule GrovePi.ButtonsTest do
   @released <<0>>
 
   setup do
-    :timer.sleep 100
+    Process.sleep 100
     {:ok, grove_pid} = GrovePi.start_link
     {:ok, _} = GrovePi.Buttons.start_link(grove_pid)
 
