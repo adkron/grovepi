@@ -3,20 +3,37 @@ defmodule GrovePi.Buttons do
   @name __MODULE__
 
   @moduledoc """
-  Listen for button presses or releases
+  Buttons are a great way to add some interactivity to your grove project.
+  The GrovePi.Buttons module gives two options for reacting to button
+  presses and releases.
 
-  Example usage:
+  GrovePi.Buttons uses [Registry](https://hexdocs.pm/elixir/master/Registry.html)
+  to dispatch pressed and released events to interested modules. This means that
+  the interested modules must be local. If you need to notify remote nodes you
+  will need to have a module to relay the events to the external nodes.
+
+  Starting The Registry
+  =====================
 
   iex> {:ok, pid} = GrovePi.start_link
   {:ok, #PID<0.172.0>}
 
   iex> GrovePi.Buttons.start_link(pid)
-  :ok
+  {:ok, #PID<0.173.0>}
+
+  Adding A Button to a Pin
+  ========================
 
   iex> pin = 2
 
   iex> GrovePi.Buttons.add(pin)
   {:ok, #PID<0.187.0>}
+
+  Registering to Receive Messages
+  ===============================
+
+  The messages will be sent to the process that calls
+  `GrovePi.Buttons.register\1`.
 
   iex> GrovePi.Buttons.register({:pressed, pin})
   {:ok, #PID<0.178.0>}
@@ -30,10 +47,20 @@ defmodule GrovePi.Buttons do
   {:pressed, 2}
   {:released, 2}
 
-  Alternatively an mfa maybe registered instead of using messages the pid
+  Alternatively an mfa may be registered instead of using messages the pid
   of the registering process will be added as the first argument to the
   function
-  iex> GrovePi.Buttons.register({:released, pin}, {module, :function, [args]})
+
+  Registering A Module Callback
+  =============================
+
+    defmodule MyModule do
+      def my_function(registered_pid, arg1, arg2) do
+        # ...
+      end
+    end
+
+  iex> GrovePi.Buttons.register({:released, pin}, {MyModule, :my_function, ["one", 2]})
   """
 
   @type event :: :pressed | :released
