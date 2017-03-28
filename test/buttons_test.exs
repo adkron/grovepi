@@ -49,7 +49,7 @@ defmodule GrovePi.ButtonsTest do
     send(pid, {:called_with, argument})
   end
 
-  test "registering for pressed event with {module, function, arguement}",
+  test "registering for pressed event with {module, function, argument}",
   %{grove: grove} do
     pin = 5
     GrovePi.Buttons.add(pin)
@@ -59,7 +59,7 @@ defmodule GrovePi.ButtonsTest do
     assert_receive {:called_with, "argument"}, 300
   end
 
-  test "registering for released event with {module, function, arguement}",
+  test "registering for released event with {module, function, argument}",
   %{grove: grove} do
     pin = 5
     GrovePi.Buttons.add(pin)
