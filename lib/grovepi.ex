@@ -26,11 +26,11 @@ defmodule GrovePi do
   @doc """
   Get the version of firmware running on the GrovePi's microcontroller.
   """
-  @spec firmware_version(pid) :: binary
+  @spec firmware_version(pid) :: binary | {:error, term}
   def firmware_version(pid) do
-    :ok = send_request(pid, <<8, 0, 0, 0>>)
-    <<_, major, minor, patch>> = get_response(pid, 4)
-    "#{major}.#{minor}.#{patch}"
+    with :ok <- send_request(pid, <<8, 0, 0, 0>>),
+         <<_, major, minor, patch>> <- get_response(pid, 4),
+         do: "#{major}.#{minor}.#{patch}"
   end
 
   @doc """
