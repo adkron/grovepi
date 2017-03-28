@@ -26,6 +26,29 @@ def deps do
 end
 ```
 
+GrovePi uses [elixir_ale](https://hex.pm/packages/elixir_ale) for I2C communication.
+On some platforms `elixir_ale` does not compile so you may need to
+configure a stand in. Do to this limitation `elixir_ale` is not included
+except in the production environment. If you need it outside of
+production be sure to add it to your dependencies.
+
+
+```elixir
+def deps do
+  [
+   {:grovepi, "~> 0.1.0"},
+   {:elixir_ale, "~> 0.5.7"},
+  ]
+end
+```
+
+If you would like to use a stub in your tests you can configure
+a module to be used for I2C in you configuration.
+
+```elixir
+  config :grovepi, :i2c, MyI2C
+```
+
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/grovepi](https://hexdocs.pm/grovepi).
