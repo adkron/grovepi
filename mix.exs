@@ -16,6 +16,7 @@ defmodule GrovePi.Mixfile do
      source_url: @github,
      homepage_url: @homepage,
      docs: [extras: ["README.md"]],
+     aliases: ["docs": ["docs", &copy_images/1]],
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps()]
@@ -25,7 +26,7 @@ defmodule GrovePi.Mixfile do
 
   defp description do
     """
-    Use Dexter Industries' GrovePi board and many Grove sensors.
+    Use Dexter Industries' GrovePi+ and GrovePiZero boards and many Grove sensors.
     """
   end
 
@@ -40,5 +41,10 @@ defmodule GrovePi.Mixfile do
      maintainers: ["Frank Hunleth"],
      licenses: ["Apache License"],
      links: %{"GitHub" => @github}]
+  end
+
+  # Copy the images referenced by docs, since ex_doc doesn't do this.
+  defp copy_images(_) do
+    File.cp_r "assets", "doc/assets"
   end
 end
