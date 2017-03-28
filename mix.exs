@@ -38,7 +38,7 @@ defmodule GrovePi.Mixfile do
 
   defp package do
     [files: ["lib", "mix.exs", "README.md"],
-     maintainers: ["Frank Hunleth"],
+     maintainers: ["Frank Hunleth", "Amos King"],
      licenses: ["Apache License"],
      links: %{"GitHub" => @github}]
   end
