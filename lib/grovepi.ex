@@ -14,7 +14,7 @@ defmodule GrovePi do
   """
 
   @grovepi_address 0x04
-  @i2c Application.get_env(:grovepi, :i2c)
+  use GrovePi.I2C
 
   @doc """
   """

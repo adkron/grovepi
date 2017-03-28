@@ -4,7 +4,7 @@ defmodule GrovePi.RGBLCD do
 
   @rgb_address  0x62
   @text_address 0x3e
-  @i2c Application.get_env(:grovepi, :i2c)
+  use GrovePi.I2C
 
   # Currently this is directly translated from Python
   # NOTE: Review datasheet, since this does not seem like

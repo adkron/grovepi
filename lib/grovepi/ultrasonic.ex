@@ -12,7 +12,7 @@ defmodule GrovePi.Ultrasonic do
 
   """
 
-  @i2c Application.get_env(:grovepi, :i2c)
+  use GrovePi.I2C
 
   def read_distance(pid, pin) do
     :ok = @i2c.write(pid, <<7, pin, 0, 0>>)
