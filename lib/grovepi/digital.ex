@@ -3,7 +3,7 @@ defmodule GrovePi.Digital do
   Write to and read digital I/O on the GrovePi.
 
   Example usage:
-
+  ```
   iex> {:ok, pid}=GrovePi.start_link
   {:ok, #PID<0.205.0>}
   iex> GrovePi.Digital.set_pin_mode(pid, 3, :output)
@@ -12,6 +12,7 @@ defmodule GrovePi.Digital do
   :ok
   iex> GrovePi.Digital.write(pid, 3, 0)
   :ok
+  ```
 
   """
 

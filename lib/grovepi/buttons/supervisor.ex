@@ -1,5 +1,7 @@
 defmodule GrovePi.Buttons.Supervisor do
   use Supervisor
+  @moduledoc false
+
   @name __MODULE__
 
   @spec start_link(pid, Supervisor.options) :: Supervisor.on_start

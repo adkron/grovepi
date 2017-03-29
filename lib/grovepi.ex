@@ -6,10 +6,12 @@ defmodule GrovePi do
 
   To check that your GrovePi hardware is working, try this:
 
+  ```
   iex> {:ok, pid}=GrovePi.start_link()
   {:ok, #PID<0.212.0>}
   iex> GrovePi.firmware_version(pid)
   "1.2.2"
+  ```
 
   """
 

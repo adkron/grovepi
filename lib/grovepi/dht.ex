@@ -4,10 +4,12 @@ defmodule GrovePi.DHT do
 
   Example use:
 
+  ```
   iex> {:ok, pid}=GrovePi.start_link
   {:ok, #PID<0.199.0>}
   iex> GrovePi.DHT.read_temp_and_humidity(pid, 2)
   {23.0, 40.0}
+  ```
 
   """
 

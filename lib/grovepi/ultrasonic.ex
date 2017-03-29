@@ -3,12 +3,14 @@ defmodule GrovePi.Ultrasonic do
   Read distance from the Grove Ultrasonic sensor.
 
   Example use:
+  ```
   iex> {:ok, pid}=GrovePi.start_link
   {:ok, #PID<0.205.0>}
   iex> GrovePi.Ultrasonic.read_distance(pid, 2)
   20
   iex> GrovePi.Ultrasonic.read_distance(pid, 2)
   23
+  ```
 
   """
 

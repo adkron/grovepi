@@ -7,6 +7,7 @@ defmodule GrovePi.Button do
   @poll_interval 100
 
   defmodule State do
+    @moduledoc false
     defstruct [:pin, :grove, :value]
   end
 

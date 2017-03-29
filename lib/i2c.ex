@@ -10,6 +10,7 @@ defmodule GrovePi.I2C do
   @type i2c_address :: 0..127
 
   defmodule State do
+    @moduledoc false
     defstruct output_messages: [], input_messages: []
   end
 
