@@ -28,7 +28,7 @@ end
 
 GrovePi uses [elixir_ale](https://hex.pm/packages/elixir_ale) for I2C communication.
 On some platforms `elixir_ale` does not compile so you may need to
-configure a stand in. Do to this limitation `elixir_ale` is not included
+configure a stand in. Due to this limitation `elixir_ale` is not included
 except in the production environment. If you need it outside of
 production be sure to add it to your dependencies.
 
@@ -37,7 +37,7 @@ production be sure to add it to your dependencies.
 def deps do
   [
    {:grovepi, "~> 0.1.0"},
-   {:elixir_ale, "~> 0.5.7"},
+   {:elixir_ale, "~> 0.6"},
   ]
 end
 ```

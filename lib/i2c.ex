@@ -3,7 +3,7 @@ defmodule GrovePi.I2C do
 
   defmacro __using__(_) do
     quote do
-      @i2c Application.get_env(:grovepi, :i2c, I2c)
+      @i2c Application.get_env(:grovepi, :i2c, ElixirALE.I2C)
     end
   end
 
