@@ -1,5 +1,7 @@
 # GrovePi
 
+[![Ebert](https://ebertapp.io/github/fhunleth/grovepi.svg)](https://ebertapp.io/github/fhunleth/grovepi)
+
 Use the [GrovePi](https://www.dexterindustries.com/grovepi/) and sensors in Elixir
 on a Raspberry Pi. If you have a Beaglebone Green or other port that has direct
 access to sensors (rather than going through a GrovePi), take a look at
