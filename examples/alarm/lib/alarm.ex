@@ -1,0 +1,2 @@
+defmodule Alarm do
+end
