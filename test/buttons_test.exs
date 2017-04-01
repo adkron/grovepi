@@ -8,11 +8,11 @@ defmodule GrovePi.ButtonsTest do
     pin = 5
     {:ok, _} = GrovePi.Button.start_link(pin)
 
-    {:ok, [grove: GrovePi.Board, pin: pin]}
+    {:ok, [pin: pin]}
   end
 
   test "registering for a pressed event receives pressed messages",
-  %{grove: grove, pin: pin} do
+  %{pin: pin} do
     GrovePi.Button.subscribe(pin, :pressed)
     GrovePi.I2C.add_response(GrovePi.Board, @pressed)
 
@@ -20,23 +20,23 @@ defmodule GrovePi.ButtonsTest do
   end
 
   test "registering for a released event receives released messages",
-  %{grove: grove, pin: pin} do
+  %{pin: pin} do
     GrovePi.Button.subscribe(pin, :released)
-    GrovePi.I2C.add_responses(grove, [@pressed, @released])
+    GrovePi.I2C.add_responses(GrovePi.Board, [@pressed, @released])
 
-    assert_receive {:released, ^pin}, 300
+    assert_receive {^pin, :released}, 300
   end
 
   @tag :capture_log
   test "recovers from I2C error",
-  %{grove: grove, pin: pin} do
+  %{pin: pin} do
     GrovePi.Button.subscribe(pin, :released)
-    GrovePi.I2C.add_responses(grove, [{:error, :i2c_write_failed}])
+    GrovePi.I2C.add_responses(GrovePi.Board, [{:error, :i2c_write_failed}])
 
     Process.sleep 100
 
-    GrovePi.I2C.add_responses(grove, [@pressed, @released])
-    assert_receive {:released, ^pin}, 300
+    GrovePi.I2C.add_responses(GrovePi.Board, [@pressed, @released])
+    assert_receive {^pin, :released}, 300
   end
 
   def resend(pid, argument) do
