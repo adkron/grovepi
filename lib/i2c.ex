@@ -15,8 +15,8 @@ defmodule GrovePi.I2C do
   end
 
   @spec start_link(binary, i2c_address, [term]) :: {:ok, pid}
-  def start_link(_devname, _address, _opts \\ []) do
-    GenServer.start_link(__MODULE__, %State{})
+  def start_link(_devname, _address, opts \\ []) do
+    GenServer.start_link(__MODULE__, %State{}, opts)
   end
 
   def add_responses(pid, messages) do
