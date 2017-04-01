@@ -13,10 +13,10 @@ defmodule GrovePi.DHT do
 
   """
 
-  def read_temp_and_humidity(pid, pin, module_type \\ 0) do
-    :ok = GrovePi.send_request(pid, <<40, pin, module_type, 0>>)
+  def read_temp_and_humidity(pin, module_type \\ 0) do
+    :ok = GrovePi.Board.send_request(<<40, pin, module_type, 0>>)
     <<_, temp::little-float-size(32), humidity::little-float-size(32)>> =
-      GrovePi.get_response(pid, 9)
+      GrovePi.Board.get_response(9)
     {temp, humidity}
   end
 end

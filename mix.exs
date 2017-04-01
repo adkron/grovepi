@@ -22,7 +22,9 @@ defmodule GrovePi.Mixfile do
      deps: deps()]
   end
 
-  def application, do: []
+  def application do
+    [mod: {GrovePi, []}]
+  end
 
   defp description do
     """

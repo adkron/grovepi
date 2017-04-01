@@ -11,19 +11,16 @@ defmodule GrovePi.Ultrasonic do
   iex> GrovePi.Ultrasonic.read_distance(pid, 2)
   23
   ```
-
   """
 
-  use GrovePi.I2C
+  alias GrovePi.Board
 
-  def read_distance(pid, pin) do
-    :ok = @i2c.write(pid, <<7, pin, 0, 0>>)
-
-    # Firmware waits for 50 ms to read sensor
-    Process.sleep(60)
-
-    <<_, distance::big-integer-size(16)>> = @i2c.read(pid, 3)
-    distance
+  def read_distance(pin) do
+    with :ok <- Board.send_request(<<7, pin, 0, 0>>),
+         # Firmware waits for 50 ms to read sensor
+         :ok <- Process.sleep(60),
+         <<_, distance::big-integer-size(16)>> <- Board.get_response(3),
+         do: distance
   end
 
 end

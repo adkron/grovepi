@@ -12,43 +12,25 @@ defmodule GrovePi do
   iex> GrovePi.firmware_version(pid)
   "1.2.2"
   ```
-
   """
+
+  use Application
 
   @grovepi_address 0x04
-  use GrovePi.I2C
 
-  @doc """
-  """
-  @spec start_link(byte) :: {:ok, pid} | {:error, any}
-  def start_link(address \\ @grovepi_address) when is_integer(address) do
-    @i2c.start_link("i2c-1", address)
-  end
+  @type pin :: integer
 
-  @doc """
-  Get the version of firmware running on the GrovePi's microcontroller.
-  """
-  @spec firmware_version(pid) :: binary | {:error, term}
-  def firmware_version(pid) do
-    with :ok <- send_request(pid, <<8, 0, 0, 0>>),
-         <<_, major, minor, patch>> <- get_response(pid, 4),
-         do: "#{major}.#{minor}.#{patch}"
-  end
+  def start(_type, _args) do
+    import Supervisor.Spec, warn: false
 
-  @doc """
-  Send a request to the GrovePi. This is not normally called directly
-  except when interacting with an unsupported sensor.
-  """
-  @spec send_request(pid, binary) :: :ok
-  def send_request(pid, message) when byte_size(message) == 4 do
-    @i2c.write(pid, message)
-  end
+    children = [
+      supervisor(Registry, [:unique, GrovePi.PinRegistry], id: :pin_registry),
+      supervisor(Registry, [:duplicate, GrovePi.SubscriberRegistry], id: :subscriber_registry),
 
-  @doc """
-  Get a response to a previously send request to the GrovePi. This is
-  not normally called directly.
-  """
-  def get_response(pid, len) do
-    @i2c.read(pid, len)
+      worker(GrovePi.Board, [@grovepi_address]),
+    ]
+
+    opts = [strategy: :one_for_one, name: GrovePi.Supervisor]
+    Supervisor.start_link(children, opts)
   end
 end
