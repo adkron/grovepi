@@ -1,12 +1,13 @@
 defmodule GrovePi.ButtonsTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case
   @pressed <<1>>
   @released <<0>>
 
   setup do
-    Process.sleep 100
     pin = 5
     {:ok, _} = GrovePi.Button.start_link(pin)
+
+    GrovePi.I2C.reset(GrovePi.Board)
 
     {:ok, [pin: pin]}
   end

@@ -1,27 +1,25 @@
 defmodule GrovePi.GrovePiTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case
 
   setup do
-    {:ok, grove_pid} = GrovePi.start_link
-    {:ok, [grove: grove_pid]}
+    GrovePi.I2C.reset(GrovePi.Board)
+    {:ok, []}
   end
 
-  test "getting version works",
-    %{grove: grove} do
-    GrovePi.I2C.add_response(grove, <<0, 1, 2, 3>>)
+  test "getting version works" do
+    GrovePi.I2C.add_response(GrovePi.Board, <<0, 1, 2, 3>>)
 
-    assert GrovePi.firmware_version(grove) == "1.2.3"
-    assert GrovePi.I2C.get_last_write(grove) == <<8, 0, 0, 0>>
-    assert GrovePi.I2C.get_last_write(grove) == :no_more_messages
+    assert GrovePi.Board.firmware_version() == "1.2.3"
+    assert GrovePi.I2C.get_last_write(GrovePi.Board) == <<8, 0, 0, 0>>
+    assert GrovePi.I2C.get_last_write(GrovePi.Board) == :no_more_messages
   end
 
-  test "getting version with I2C error",
-    %{grove: grove} do
-    GrovePi.I2C.add_response(grove, {:error, :i2c_write_failed})
+  test "getting version retries with I2C error" do
+    GrovePi.I2C.add_response(GrovePi.Board, {:error, :i2c_write_failed})
+    GrovePi.I2C.add_response(GrovePi.Board, <<0, 1, 2, 3>>)
 
-    # Check that the error is passed through
-    assert GrovePi.firmware_version(grove) == {:error, :i2c_write_failed}
-    assert GrovePi.I2C.get_last_write(grove) == <<8, 0, 0, 0>>
-    assert GrovePi.I2C.get_last_write(grove) == :no_more_messages
+    assert GrovePi.Board.firmware_version() == "1.2.3"
+    assert GrovePi.I2C.get_last_write(GrovePi.Board) == <<8, 0, 0, 0>>
+    assert GrovePi.I2C.get_last_write(GrovePi.Board) == :no_more_messages
   end
 end
