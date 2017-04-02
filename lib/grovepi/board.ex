@@ -6,7 +6,7 @@ defmodule GrovePi.Board do
 
   To check that your GrovePi hardware is working, try this:
 
-  ```
+  ```elixir
   iex> GrovePi.Board.firmware_version()
   "1.2.2"
   ```

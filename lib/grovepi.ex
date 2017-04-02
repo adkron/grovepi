@@ -1,17 +1,18 @@
 defmodule GrovePi do
   @moduledoc """
-  Low-level interface for sending raw requests and receiving responses from a
-  GrovePi hat. Create one of these first and then use one of the other GrovePi
-  modules for interacting with a connected sensor, light, or actuator.
+  This application lets you interact with the [GrovePi+](https://www.dexterindustries.com/grovepi/)
+  and any connected sensors in Elixir. It will automatically start with your
+  application an initiate a connection to the GrovePi+ board.
 
-  To check that your GrovePi hardware is working, try this:
+  To see that everything is functioning, check the firmware version on the board.
 
-  ```
-  iex> {:ok, pid}=GrovePi.start_link()
-  {:ok, #PID<0.212.0>}
-  iex> GrovePi.firmware_version(pid)
+  ```elixir
+  iex> GrovePi.Board.firmware_version()
   "1.2.2"
   ```
+
+  If this doesn't work, then nothing else will. If you're running Raspbian,
+  double check that I2C is enabled in `raspi-config`.
   """
 
   use Application
