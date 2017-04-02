@@ -33,10 +33,15 @@ defmodule GrovePi.Mixfile do
   end
 
   defp deps do
-    [{:elixir_ale,  "~> 0.6", only: [:prod]},
-     {:dialyxir,    ">= 0.0.0", only: [:dev, :test]},
+    i2c_dep(Application.get_env(:grovepi, :i2c, ElixirALE.I2C)) ++
+    [{:dialyxir,    ">= 0.0.0", only: [:dev, :test]},
      {:ex_doc,      ">= 0.0.0", only: :dev}]
   end
+
+  defp i2c_dep(ElixirALE.I2C) do
+     [{:elixir_ale,  "~> 0.6"}]
+  end
+  defp i2c_dep(_), do: []
 
   defp package do
     [files: ["lib", "mix.exs", "README.md"],
