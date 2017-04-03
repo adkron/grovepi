@@ -1,8 +1,22 @@
 defmodule GrovePi.Button do
   use GenServer
 
+  @moduledoc """
+  Control a Grove buzzer. While a buzzer can be controlled solely using
+  `GrovePi.Digital`, this module provides some helpers.
+
+  Example usage:
+  ```
+  iex> {:ok, buzzer}=GrovePi.Button.start_link(3)
+  :ok
+  iex> GrovePi.Button.subscribe(3, :pressed)
+  :ok
+  ```
+  """
+
   @type level :: 1 | 0
   @type change :: {level, level}
+  @type event :: :pressed, :released
 
   @poll_interval 100
 
