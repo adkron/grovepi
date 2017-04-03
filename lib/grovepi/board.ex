@@ -25,7 +25,6 @@ defmodule GrovePi.Board do
     @i2c.start_link("i2c-1", address, opts)
   end
 
-
   @doc """
   Get the version of firmware running on the GrovePi's microcontroller.
   """

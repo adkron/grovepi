@@ -23,6 +23,7 @@ defmodule Alarm do
   end
 
   defmodule Worker do
+    @moduledoc false
     use GenServer
 
     defstruct [:button, :buzzer]

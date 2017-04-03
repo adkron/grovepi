@@ -7,4 +7,3 @@ i2c_implementation =
   end
 
 config :grovepi, i2c: i2c_implementation
-
