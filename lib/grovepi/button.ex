@@ -21,7 +21,7 @@ defmodule GrovePi.Button do
 
   @type level :: 1 | 0
   @type change :: {level, level}
-  @type event :: :pressed, :released
+  @type event :: :pressed | :released
 
   @poll_interval 100
 
