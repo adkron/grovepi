@@ -31,7 +31,6 @@ defmodule GrovePi.Analog do
   ```
   """
 
-  @type pin :: integer
   @type adc_level :: 0..1023
   @type pwm :: 0..255
 
@@ -39,7 +38,7 @@ defmodule GrovePi.Analog do
   Read the value from the specified analog pin. This returns a value from
   0-1023 that maps to 0 to 5 volts.
   """
-  @spec read(pin) :: adc_level | {:error, term}
+  @spec read(GrovePi.pin) :: adc_level | {:error, term}
   def read(pin) do
     with :ok <- GrovePi.Board.send_request(<<3, pin, 0, 0>>),
          <<_, value::size(16)>> <- GrovePi.Board.get_response(3),
@@ -52,7 +51,7 @@ defmodule GrovePi.Analog do
   can be used to dim an LED, for example, by turning the output on only
   a fraction of the time.
   """
-  @spec write(pin, pwm) :: :ok | {:error, term}
+  @spec write(GrovePi.pin, pwm) :: :ok | {:error, term}
   def write(pin, value) do
     GrovePi.Board.send_request(<<4, pin, value, 0>>)
   end
