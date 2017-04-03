@@ -23,9 +23,13 @@ defmodule GrovePi.Button do
     state = %State{pin: pin}
             |> update_value()
 
-    {:ok, _} = :timer.send_interval(@poll_interval, :poll_button)
+    schedule_poll()
 
     {:ok, state}
+  end
+
+  def schedule_poll do
+    Process.send_after(self(), :poll_button, @poll_interval)
   end
 
   @spec read(GenServer.server) :: level
@@ -44,6 +48,7 @@ defmodule GrovePi.Button do
 
   def handle_info(:poll_button, state) do
     new_state = update_value(state)
+    schedule_poll()
     {:noreply, new_state}
   end
 
