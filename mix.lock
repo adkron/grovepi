@@ -1,5 +1,5 @@
 %{"dialyxir": {:hex, :dialyxir, "0.5.0", "5bc543f9c28ecd51b99cc1a685a3c2a1a93216990347f259406a910cf048d1d7", [:mix], []},
   "earmark": {:hex, :earmark, "1.2.0", "bf1ce17aea43ab62f6943b97bd6e3dc032ce45d4f787504e3adf738e54b42f3a", [:mix], []},
-  "elixir_ale": {:hex, :elixir_ale, "0.6.0", "b80c2e36fe8ad62374c6145037a7fb190eba5185dc32682aeb8de940ff88f2a4", [:make, :mix], [{:elixir_make, "~> 0.4", [hex: :elixir_make, optional: false]}]},
+  "elixir_ale": {:hex, :elixir_ale, "0.6.1", "475c8f57811bed621fb4d1118da4b0a40f3e3780609ddcf23a303879123fdf96", [:make, :mix], [{:elixir_make, "~> 0.4", [hex: :elixir_make, optional: false]}]},
   "elixir_make": {:hex, :elixir_make, "0.4.0", "992f38fabe705bb45821a728f20914c554b276838433349d4f2341f7a687cddf", [:mix], []},
   "ex_doc": {:hex, :ex_doc, "0.15.0", "e73333785eef3488cf9144a6e847d3d647e67d02bd6fdac500687854dd5c599f", [:mix], [{:earmark, "~> 1.1", [hex: :earmark, optional: false]}]}}
