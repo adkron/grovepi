@@ -10,7 +10,7 @@ defmodule GrovePi.Button do
 
   Example usage:
   ```
-  iex> {:ok, buzzer}=GrovePi.Button.start_link(3)
+  iex> {:ok, button}=GrovePi.Button.start_link(3)
   :ok
   iex> GrovePi.Button.subscribe(3, :pressed)
   :ok

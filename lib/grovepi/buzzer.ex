@@ -8,7 +8,7 @@ defmodule GrovePi.Buzzer do
   ```
   iex> {:ok, buzzer}=GrovePi.Buzzer.start_link(3)
   :ok
-  iex> GrovePi.Buzzer.buzz(buzzer)
+  iex> GrovePi.Buzzer.buzz(3)
   :ok
   ```
   """
