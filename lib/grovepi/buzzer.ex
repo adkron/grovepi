@@ -6,9 +6,7 @@ defmodule GrovePi.Buzzer do
 
   Example usage:
   ```
-  iex> {:ok, grovepi}=GrovePi.start_link
-  {:ok, #PID<0.205.0>}
-  iex> {:ok, buzzer}=GrovePi.Buzzer.start_link(grovepi, 3)
+  iex> {:ok, buzzer}=GrovePi.Buzzer.start_link(3)
   :ok
   iex> GrovePi.Buzzer.buzz(buzzer)
   :ok
