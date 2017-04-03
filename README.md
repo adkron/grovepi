@@ -1,5 +1,6 @@
 # GrovePi
 
+[![Build Status](https://travis-ci.org/fhunleth/grovepi.svg?branch=master)](https://travis-ci.org/fhunleth/grovepi)
 [![Ebert](https://ebertapp.io/github/fhunleth/grovepi.svg)](https://ebertapp.io/github/fhunleth/grovepi)
 
 Use the [GrovePi](https://www.dexterindustries.com/grovepi/) and sensors in Elixir
