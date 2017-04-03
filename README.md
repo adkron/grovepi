@@ -35,7 +35,6 @@ configure a stand in. Due to this limitation `elixir_ale` is not included
 except in the production environment. If you need it outside of
 production be sure to add it to your dependencies.
 
-
 ```elixir
 def deps do
   [
