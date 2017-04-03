@@ -2,14 +2,19 @@ defmodule GrovePi.Button do
   use GenServer
 
   @moduledoc """
-  Control a Grove buzzer. While a buzzer can be controlled solely using
-  `GrovePi.Digital`, this module provides some helpers.
+  Listen for events from a GrovePi button. There are two types of
+  events; pressed and released. When registering for an event the button
+  will then send a message of `{pin, :pressed}` or `{pin, :released}`.
+  The button works by polling `GrovePi.Digital` on the pin that you have
+  registered to a button.
 
   Example usage:
   ```
   iex> {:ok, buzzer}=GrovePi.Button.start_link(3)
   :ok
   iex> GrovePi.Button.subscribe(3, :pressed)
+  :ok
+  iex> GrovePi.Button.subscribe(3, :released)
   :ok
   ```
   """
@@ -46,11 +51,12 @@ defmodule GrovePi.Button do
     Process.send_after(self(), :poll_button, @poll_interval)
   end
 
-  @spec read(GenServer.server) :: level
+  @spec read(GrovePi.pin) :: level
   def read(pin) do
     GenServer.call(Utils.pin_name(pin), :read)
   end
 
+  @spec subscribe(GrovePi.pin, event) :: level
   def subscribe(pin, event) do
     Utils.subscribe({pin, event})
   end
