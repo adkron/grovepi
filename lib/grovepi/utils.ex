@@ -12,6 +12,7 @@ defmodule GrovePi.Utils do
     end)
   end
 
+  @spec subscribe(GrovePi.Buttons.message) :: :ok | {:error, {:already_registered, pid}}
   def subscribe(message) do
     Registry.register(GrovePi.SubscriberRegistry, message, :ok)
   end
