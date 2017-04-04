@@ -4,14 +4,18 @@ defmodule GrovePi.Digital do
 
   Example usage:
   ```
-  iex> {:ok, pid}=GrovePi.start_link
-  {:ok, #PID<0.205.0>}
-  iex> GrovePi.Digital.set_pin_mode(pid, 3, :output)
+  iex> pin = 3
+
+  iex> GrovePi.Digital.set_pinmode(pin, :input)
   :ok
-  iex> GrovePi.Digital.write(pid, 3, 1)
+  iex> GrovePi.Digital.write(pin, 1)
   :ok
-  iex> GrovePi.Digital.write(pid, 3, 0)
+  iex> GrovePi.Digital.write(pin, 0)
   :ok
+  iex> GrovePi.Digital.set_pinmode(pin, :output)
+  :ok
+  iex> GrovePi.Digital.read(pin, 0)
+  1
   ```
 
   """
