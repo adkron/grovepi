@@ -84,7 +84,7 @@ with `mix test path/to/file_test.exs`.
 [dexter]: https://www.dexterindustries.com/grovepi/
 [ale]: https://hex.pm/packages/elixir_ale
 [docs]: https://hexdocs.pm/grovepi
-[fork]: http://help.github.com/fork-a-repo/
+[fork]: https://help.github.com/fork-a-repo/
 [branch]:
-http://help.github.com/articles/creating-and-deleting-branches-within-your-repository/
-[pr]: http://help.github.com/send-pull-requests/
+https://help.github.com/articles/creating-and-deleting-branches-within-your-repository/
+[pr]: https://help.github.com/articles/creating-a-pull-request/
