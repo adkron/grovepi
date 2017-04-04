@@ -27,8 +27,8 @@ defmodule GrovePi.I2C do
     GenServer.call(pid, {:add_responses, [message]})
   end
 
-  def get_last_write(pid) do
-    GenServer.call(pid, :get_last_write)
+  def get_last_write(pid, opts \\ []) do
+    GenServer.call(pid, {:get_last_write, opts})
   end
 
   @spec write(pid, binary) :: :ok
@@ -47,13 +47,19 @@ defmodule GrovePi.I2C do
   def write_device(_,_,_), do: :ok
 
   def handle_call({:write, message}, _from, state) do
-    {:reply, :ok, %{state | input_messages: [message | state.input_messages]}}
+    {:reply, :ok, %{state | input_messages: [add_time_to_messages(message) | state.input_messages]}}
   end
 
-  def handle_call(:get_last_write, _from, state) do
+  def handle_call({:get_last_write, [include_time: true]}, _from, state) do
     {result, rest} = pop_or_error(state.input_messages)
     new_state = %{state | input_messages: rest}
     {:reply, result, new_state}
+  end
+
+  def handle_call({:get_last_write, []}, _from, state) do
+    {{_, message}, rest} = pop_or_error(state.input_messages)
+    new_state = %{state | input_messages: rest}
+    {:reply, message, new_state}
   end
 
   def handle_call({:read,  _len}, _from, %State{output_messages: []} = state) do
@@ -74,6 +80,11 @@ defmodule GrovePi.I2C do
     {:reply, :ok, new_state}
   end
 
-  defp pop_or_error([]), do: {:no_more_messages, []}
+  defp pop_or_error([]), do: {{:error, :no_more_messages}, []}
   defp pop_or_error([head | tail]), do: {head, tail}
+
+  defp add_time_to_messages(message) do
+    {System.monotonic_time(:millisecond), message}
+  end
+
 end
