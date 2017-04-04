@@ -65,6 +65,11 @@ We welcome contributions to tackle issues in GrovePi.
 
 First fork the repository and fetch your own copy
 
+~~~bash
+  mix deps.get
+  mix test
+~~~
+
 ## Submitting a Pull Request
 
 1. [Fork the repository.][fork]
