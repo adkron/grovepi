@@ -13,6 +13,10 @@ defmodule GrovePi.DHT do
 
   """
 
+  @type temp :: integer
+  @type humidity :: integer
+  @type module_type :: integer
+
   alias GrovePi.Utils
 
   defmodule State do
@@ -30,6 +34,8 @@ defmodule GrovePi.DHT do
     {:ok, %State{pin: pin}}
   end
 
+  @spec read_temp_and_humidity(GrovePi.pin) :: {temp, humidity}
+  @spec read_temp_and_humidity(GrovePi.pin, module_type) :: {temp, humidity}
   def read_temp_and_humidity(pin, module_type \\ 0) do
     GenServer.call(Utils.pin_name(pin), {:read_temp_and_humidity, module_type})
   end
