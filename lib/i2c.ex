@@ -11,31 +11,31 @@ defmodule GrovePi.I2C do
 
   defmodule State do
     @moduledoc false
-    defstruct output_messages: [], input_messages: []
+    defstruct responses: [], writes: []
 
     def add_input(%State{} = state, message) do
       %{state |
-        input_messages: [add_time_to_messages(message) | state.input_messages]
+        writes: [add_time_to_messages(message) | state.writes]
       }
     end
 
     def add_responses(%State{} = state, responses) do
-      %{state | output_messages: state.output_messages ++ responses}
+      %{state | responses: state.responses ++ responses}
     end
 
     def pop_last_write(%State{} = state) do
-      {message_pack, rest} = pop_or_error(state.input_messages)
-      new_state = %{state | input_messages: rest}
+      {message_pack, rest} = pop_or_error(state.writes)
+      new_state = %{state | writes: rest}
       {message_pack, new_state}
     end
 
-    def pop_last_response(%State{output_messages: []} = state) do
+    def pop_last_response(%State{responses: []} = state) do
       {<<0>>, state}
     end
 
-    def pop_last_response(%State{output_messages: output_messages} = state) do
-      [message | rest_output_messages] = output_messages
-      {message, %{state | output_messages: rest_output_messages}}
+    def pop_last_response(%State{responses: responses} = state) do
+      [message | rest_responses] = responses
+      {message, %{state | responses: rest_responses}}
     end
 
     defp pop_or_error([]), do: {{:error, :no_more_messages}, []}
