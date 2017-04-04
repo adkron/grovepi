@@ -13,11 +13,33 @@ defmodule GrovePi.I2C do
     @moduledoc false
     defstruct output_messages: [], input_messages: []
 
-    def add_input(state, message) do
+    def add_input(%State{} = state, message) do
       %{state |
         input_messages: [add_time_to_messages(message) | state.input_messages]
       }
     end
+
+    def add_responses(%State{} = state, responses) do
+      %{state | output_messages: state.output_messages ++ responses}
+    end
+
+    def pop_last_write(%State{} = state) do
+      {message_pack, rest} = pop_or_error(state.input_messages)
+      new_state = %{state | input_messages: rest}
+      {message_pack, new_state}
+    end
+
+    def pop_last_response(%State{output_messages: []} = state) do
+      {<<0>>, state}
+    end
+
+    def pop_last_response(%State{output_messages: output_messages} = state) do
+      [message | rest_output_messages] = output_messages
+      {message, %{state | output_messages: rest_output_messages}}
+    end
+
+    defp pop_or_error([]), do: {{:error, :no_more_messages}, []}
+    defp pop_or_error([head | tail]), do: {head, tail}
 
     defp add_time_to_messages(message) do
       {System.monotonic_time(:millisecond), message}
@@ -61,40 +83,25 @@ defmodule GrovePi.I2C do
   end
 
   def handle_call({:get_last_write, [include_time: true]}, _from, state) do
-    {message_pack, new_state} = last_write_response(state)
+    {message_pack, new_state} = State.pop_last_write(state)
     {:reply, message_pack, new_state}
   end
 
   def handle_call({:get_last_write, []}, _from, state) do
-    {{_, message}, new_state} = last_write_response(state)
+    {{_, message}, new_state} = State.pop_last_write(state)
     {:reply, message, new_state}
   end
 
-  def handle_call({:read,  _len}, _from, %State{output_messages: []} = state) do
-    {:reply, <<0>>, state}
+  def handle_call({:read,  _len}, _from, state) do
+    {message, new_state} = State.pop_last_response(state)
+    {:reply, message, new_state}
   end
 
-  def handle_call({:read,  _len}, _from, %State{output_messages: output_messages} = state) do
-    [message | rest_output_messages] = output_messages
-    {:reply, message, %{state | output_messages: rest_output_messages}}
-  end
-
-  def handle_call({:add_responses, messages}, _from, state) do
-    {:reply, :ok, %{state | output_messages: state.output_messages ++ messages}}
+  def handle_call({:add_responses, responses}, _from, state) do
+    {:reply, :ok, State.add_responses(state, responses)}
   end
 
   def handle_call(:reset, _from, _state) do
-    new_state = %State{input_messages: [], output_messages: []}
-    {:reply, :ok, new_state}
+    {:reply, :ok, %State{}}
   end
-
-  defp pop_or_error([]), do: {{:error, :no_more_messages}, []}
-  defp pop_or_error([head | tail]), do: {head, tail}
-
-  defp last_write_response(state) do
-    {message_pack, rest} = pop_or_error(state.input_messages)
-    new_state = %{state | input_messages: rest}
-    {message_pack, new_state}
-  end
-
 end
