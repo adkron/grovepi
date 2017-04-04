@@ -33,12 +33,12 @@ defmodule GrovePi.Buzzer do
     GenServer.start_link(__MODULE__, [pin], opts)
   end
 
-  @spec buzz(GrovePi.pin, duration) :: Supervisor.on_start
+  @spec buzz(GrovePi.pin, duration) :: :ok
   def buzz(pin, duration \\ 1000) do
     GenServer.cast(Utils.pin_name(pin), {:buzz, duration})
   end
 
-  @spec off(GrovePi.pin) :: Supervisor.on_start
+  @spec off(GrovePi.pin) :: :ok
   def off(pin) do
     GenServer.cast(Utils.pin_name(pin), :off)
   end
