@@ -29,26 +29,26 @@ defmodule GrovePi.Button do
 
   defmodule State do
     @moduledoc false
-    defstruct [:pin, :value]
+    defstruct [:pin, :value, :poll_interval]
   end
 
   @spec start_link(GrovePi.pin) :: Supervisor.on_start
-  def start_link(pin, opts \\ []) do
+  def start_link(pin, poll_interval \\ @poll_interval, opts \\ []) do
     opts = Keyword.put(opts, :name, Utils.pin_name(pin))
-    GenServer.start_link(__MODULE__, [pin], opts)
+    GenServer.start_link(__MODULE__, [pin, poll_interval], opts)
   end
 
-  def init([pin]) do
-    state = %State{pin: pin}
+  def init([pin, poll_interval]) do
+    state = %State{pin: pin, poll_interval: poll_interval}
             |> update_value()
 
-    schedule_poll()
+    schedule_poll(state)
 
     {:ok, state}
   end
 
-  def schedule_poll do
-    Process.send_after(self(), :poll_button, @poll_interval)
+  def schedule_poll(%State{poll_interval: poll_interval}) do
+    Process.send_after(self(), :poll_button, poll_interval)
   end
 
   @spec read(GrovePi.pin) :: level
@@ -63,12 +63,12 @@ defmodule GrovePi.Button do
 
   def handle_call(:read, _from, state) do
     new_state = update_value(state)
-    {:reply, new_state.value, state}
+    {:reply, new_state.value, new_state}
   end
 
   def handle_info(:poll_button, state) do
     new_state = update_value(state)
-    schedule_poll()
+    schedule_poll(state)
     {:noreply, new_state}
   end
 
