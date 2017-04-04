@@ -22,12 +22,11 @@ defmodule GrovePi.Analog do
   Example use:
 
   ```
-  iex> {:ok, pid}=GrovePi.start_link
-  {:ok, #PID<0.205.0>}
-  iex> GrovePi.Analog.read(pid, 0)
+  iex> pin = 3
+  iex> GrovePi.Analog.read(pin)
   971
-  iex> GrovePi.Analog.read(pid, 0)
-  400
+  iex> GrovePi.Analog.write(pin, 200)
+  :ok
   ```
   """
 
