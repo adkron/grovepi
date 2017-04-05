@@ -5,16 +5,17 @@ defmodule GrovePi.DHT do
   Example use:
 
   ```
-  iex> {:ok, button}=GrovePi.DHT.start_link(3)
+  iex> pin = 3
+  iex> {:ok, pid}=GrovePi.DHT.start_link(pin)
   {:ok, #PID<0.199.0>}
-  iex> GrovePi.DHT.read_temp_and_humidity(pid, 2)
+  iex> GrovePi.DHT.read_temp_and_humidity(pin)
   {23.0, 40.0}
   ```
 
   """
 
-  @type temp :: integer
-  @type humidity :: integer
+  @type temp :: float
+  @type humidity :: float
   @type module_type :: integer
 
   alias GrovePi.Utils
