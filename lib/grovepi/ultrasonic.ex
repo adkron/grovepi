@@ -4,7 +4,8 @@ defmodule GrovePi.Ultrasonic do
 
   Example use:
   ```
-  iex> {:ok, pid}=GrovePi.Ultrasonic.start_link(3)
+  iex> pin = 3
+  iex> {:ok, pid}=GrovePi.Ultrasonic.start_link(pin)
   {:ok, #PID<0.205.0>}
   iex> GrovePi.Ultrasonic.read_distance(pin)
   20
