@@ -17,7 +17,6 @@ defmodule GrovePi.Buzzer do
 
   @type duration :: integer
 
-  alias GrovePi.Utils
   alias GrovePi.Registry.Pin
 
 
