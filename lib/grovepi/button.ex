@@ -24,36 +24,41 @@ defmodule GrovePi.Button do
   @type event :: :pressed | :released
 
   @poll_interval 100
+  @board GrovePi.Board
 
   alias GrovePi.Registry.Pin
   @pin_registry Pin
 
   alias GrovePi.Registry.Subscriber
+  @subscriber_registry Subscriber
 
   defmodule State do
     @moduledoc false
-    defstruct [:pin, :value, :poll_interval]
+    defstruct [:pin, :value, :poll_interval, :subscriber_registry, :board]
   end
 
   @spec start_link(GrovePi.pin) :: Supervisor.on_start
   def start_link(pin, opts \\ []) do
     poll_interval = Keyword.get(opts, :poll_interval, @poll_interval)
     pin_registry = Keyword.get(opts, :pin_registry, @pin_registry)
-    pin_registry = Keyword.get(opts, :pin_registry, @pin_registry)
+    subscriber_registry = Keyword.get(opts, :subscriber_registry, @subscriber_registry)
+    board = Keyword.get(opts, :board, @board)
     opts = Keyword.put(opts, :name, Pin.name(pin_registry, pin))
 
     GenServer.start_link(__MODULE__,
-      [pin, poll_interval],
+      [pin, poll_interval, subscriber_registry, board],
       opts
       )
   end
 
-  def init([pin, poll_interval]) do
+  def init([pin, poll_interval, subscriber_registry, board]) do
     state = %State{
       pin: pin,
       poll_interval: poll_interval,
+      subscriber_registry: subscriber_registry,
+      board: board,
       }
-            |> update_value()
+      |> update_value()
 
     schedule_poll(state)
 
@@ -64,14 +69,14 @@ defmodule GrovePi.Button do
     Process.send_after(self(), :poll_button, poll_interval)
   end
 
-  @spec read(GrovePi.pin) :: level
+  @spec read(GrovePi.pin, Registry.registry) :: level
   def read(pin, pin_registry \\ @pin_registry) do
     GenServer.call(Pin.name(pin_registry, pin), :read)
   end
 
-  @spec subscribe(GrovePi.pin, event) :: level
-  def subscribe(pin, event) do
-    Subscriber.subscribe({pin, event})
+  @spec subscribe(GrovePi.pin, event, Registry.registry) :: level
+  def subscribe(pin, event, registry \\ @subscriber_registry) do
+    Subscriber.subscribe(registry, {pin, event})
   end
 
   def handle_call(:read, _from, state) do
@@ -87,13 +92,15 @@ defmodule GrovePi.Button do
 
   @spec update_value(State) ::State
   def update_value(state) do
-    new_value = GrovePi.Digital.read(state.pin)
+    new_value = GrovePi.Digital.read(state.board, state.pin)
     update_value(state, state.value, new_value)
   end
 
   defp update_value(state, value, value), do: state
   defp update_value(state, _old_value, new_value) do
-    Subscriber.notify_change({state.pin, event(new_value)})
+    Subscriber.notify_change(state.subscriber_registry,
+                             {state.pin, event(new_value)}
+                           )
     %{state | value: new_value}
   end
 
