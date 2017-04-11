@@ -26,7 +26,7 @@ defmodule GrovePi do
 
     children = [
       supervisor(GrovePi.Registry.Pin, []),
-      supervisor(Registry, [:duplicate, GrovePi.SubscriberRegistry], id: :subscriber_registry),
+      supervisor(GrovePi.Registry.Subscriber, []),
 
       worker(GrovePi.Board, [@grovepi_address]),
     ]

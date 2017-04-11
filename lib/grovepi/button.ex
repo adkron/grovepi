@@ -25,8 +25,8 @@ defmodule GrovePi.Button do
 
   @poll_interval 100
 
-  alias GrovePi.Utils
   alias GrovePi.Registry.Pin
+  alias GrovePi.Registry.Subscriber
 
   defmodule State do
     @moduledoc false
@@ -59,7 +59,7 @@ defmodule GrovePi.Button do
 
   @spec subscribe(GrovePi.pin, event) :: level
   def subscribe(pin, event) do
-    Utils.subscribe({pin, event})
+    Subscriber.subscribe({pin, event})
   end
 
   def handle_call(:read, _from, state) do
@@ -81,7 +81,7 @@ defmodule GrovePi.Button do
 
   defp update_value(state, value, value), do: state
   defp update_value(state, _old_value, new_value) do
-    Utils.notify_change({state.pin, event(new_value)})
+    Subscriber.notify_change({state.pin, event(new_value)})
     %{state | value: new_value}
   end
 
