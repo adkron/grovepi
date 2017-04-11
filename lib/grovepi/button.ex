@@ -26,6 +26,8 @@ defmodule GrovePi.Button do
   @poll_interval 100
 
   alias GrovePi.Registry.Pin
+  @pin_registry Pin
+
   alias GrovePi.Registry.Subscriber
 
   defmodule State do
@@ -34,13 +36,23 @@ defmodule GrovePi.Button do
   end
 
   @spec start_link(GrovePi.pin) :: Supervisor.on_start
-  def start_link(pin, poll_interval \\ @poll_interval, opts \\ []) do
-    opts = Keyword.put(opts, :name, Pin.name(pin))
-    GenServer.start_link(__MODULE__, [pin, poll_interval], opts)
+  def start_link(pin, opts \\ []) do
+    poll_interval = Keyword.get(opts, :poll_interval, @poll_interval)
+    pin_registry = Keyword.get(opts, :pin_registry, @pin_registry)
+    pin_registry = Keyword.get(opts, :pin_registry, @pin_registry)
+    opts = Keyword.put(opts, :name, Pin.name(pin_registry, pin))
+
+    GenServer.start_link(__MODULE__,
+      [pin, poll_interval],
+      opts
+      )
   end
 
   def init([pin, poll_interval]) do
-    state = %State{pin: pin, poll_interval: poll_interval}
+    state = %State{
+      pin: pin,
+      poll_interval: poll_interval,
+      }
             |> update_value()
 
     schedule_poll(state)
@@ -53,8 +65,8 @@ defmodule GrovePi.Button do
   end
 
   @spec read(GrovePi.pin) :: level
-  def read(pin) do
-    GenServer.call(Pin.name(pin), :read)
+  def read(pin, pin_registry \\ @pin_registry) do
+    GenServer.call(Pin.name(pin_registry, pin), :read)
   end
 
   @spec subscribe(GrovePi.pin, event) :: level
