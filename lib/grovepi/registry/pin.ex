@@ -7,7 +7,11 @@ defmodule GrovePi.Registry.Pin do
     Registry.start_link(:unique, registry, opts)
   end
 
-  def name(pin, registry \\ @registry) do
+  def name(registry, pin) do
     {:via, Registry, {registry, pin}}
+  end
+
+  def name(pin) do
+    name(@registry, pin)
   end
 end
