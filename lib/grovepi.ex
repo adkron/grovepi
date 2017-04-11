@@ -25,7 +25,7 @@ defmodule GrovePi do
     import Supervisor.Spec, warn: false
 
     children = [
-      supervisor(Registry, [:unique, GrovePi.PinRegistry], id: :pin_registry),
+      supervisor(GrovePi.Registry.Pin, []),
       supervisor(Registry, [:duplicate, GrovePi.SubscriberRegistry], id: :subscriber_registry),
 
       worker(GrovePi.Board, [@grovepi_address]),

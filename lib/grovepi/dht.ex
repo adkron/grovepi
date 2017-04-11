@@ -18,7 +18,7 @@ defmodule GrovePi.DHT do
   @type humidity :: float
   @type module_type :: integer
 
-  alias GrovePi.Utils
+  alias GrovePi.Registry.Pin
 
   defmodule State do
     @moduledoc false
@@ -27,7 +27,7 @@ defmodule GrovePi.DHT do
 
   @spec start_link(GrovePi.pin) :: Supervisor.on_start
   def start_link(pin, opts \\ []) do
-    opts = Keyword.put(opts, :name, Utils.pin_name(pin))
+    opts = Keyword.put(opts, :name, Pin.name(pin))
     GenServer.start_link(__MODULE__, [pin], opts)
   end
 
@@ -38,7 +38,7 @@ defmodule GrovePi.DHT do
   @spec read_temp_and_humidity(GrovePi.pin) :: {temp, humidity}
   @spec read_temp_and_humidity(GrovePi.pin, module_type) :: {temp, humidity}
   def read_temp_and_humidity(pin, module_type \\ 0) do
-    GenServer.call(Utils.pin_name(pin), {:read_temp_and_humidity, module_type})
+    GenServer.call(Pin.name(pin), {:read_temp_and_humidity, module_type})
   end
 
   def handle_call({:read_temp_and_humidity, module_type}, _from, state) do

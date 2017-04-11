@@ -17,7 +17,7 @@ defmodule GrovePi.Ultrasonic do
   @type distance :: integer
 
   alias GrovePi.Board
-  alias GrovePi.Utils
+  alias GrovePi.Registry.Pin
 
   defmodule State do
     @moduledoc false
@@ -26,7 +26,7 @@ defmodule GrovePi.Ultrasonic do
 
   @spec start_link(GrovePi.pin) :: Supervisor.on_start
   def start_link(pin, opts \\ []) do
-    opts = Keyword.put(opts, :name, Utils.pin_name(pin))
+    opts = Keyword.put(opts, :name, Pin.name(pin))
     GenServer.start_link(__MODULE__, [pin], opts)
   end
 
@@ -36,7 +36,7 @@ defmodule GrovePi.Ultrasonic do
 
   @spec read_distance(GrovePi.pin) :: distance
   def read_distance(pin) do
-    GenServer.call(Utils.pin_name(pin), {:read_distance})
+    GenServer.call(Pin.name(pin), {:read_distance})
   end
 
   def handle_call({:read_distance}, _from, state) do
