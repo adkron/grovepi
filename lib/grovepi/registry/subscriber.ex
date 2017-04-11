@@ -7,15 +7,25 @@ defmodule GrovePi.Registry.Subscriber do
     Registry.start_link(:duplicate, registry, opts)
   end
 
-  @spec notify_change(GrovePi.Buttons.message) :: :ok
-  def notify_change(message) do
-    Registry.dispatch(GrovePi.Registry.Subscriber, message, fn(listeners) ->
+  @spec notify_change(Registry.registry, GrovePi.Buttons.message) :: :ok
+  def notify_change(registry, message) do
+    Registry.dispatch(registry, message, fn(listeners) ->
       for {pid, :ok} <- listeners, do: send(pid, message)
     end)
   end
 
+  @spec notify_change(GrovePi.Buttons.message) :: :ok
+  def notify_change(message) do
+    notify_change(@registry, message)
+  end
+
+  @spec subscribe(Registery.registry, GrovePi.Buttons.message) :: :ok | {:error, {:already_registered, pid}}
+  def subscribe(registry, message) do
+    Registry.register(registry, message, :ok)
+  end
+
   @spec subscribe(GrovePi.Buttons.message) :: :ok | {:error, {:already_registered, pid}}
   def subscribe(message) do
-    Registry.register(GrovePi.Registry.Subscriber, message, :ok)
+    subscribe(@registry, message)
   end
 end

@@ -14,6 +14,7 @@ defmodule GrovePi.Board do
   """
 
   use GrovePi.I2C
+  @name __MODULE__
 
   @i2c_retry_count 2
 
@@ -21,7 +22,7 @@ defmodule GrovePi.Board do
   """
   @spec start_link(byte) :: {:ok, pid} | {:error, any}
   def start_link(address, opts \\ []) when is_integer(address) do
-    opts = Keyword.put(opts, :name, __MODULE__)
+    opts = Keyword.put_new(opts, :name, @name)
     @i2c.start_link("i2c-1", address, opts)
   end
 
@@ -39,18 +40,26 @@ defmodule GrovePi.Board do
   Send a request to the GrovePi. This is not normally called directly
   except when interacting with an unsupported sensor.
   """
-  @spec send_request(binary) :: :ok | {:error, term}
-  def send_request(message) when byte_size(message) == 4 do
-    send_request_with_retry(message, @i2c_retry_count)
+  @spec send_request(GenServer.server, binary) :: :ok | {:error, term}
+  def send_request(board, message) when byte_size(message) == 4 do
+    send_request_with_retry(board, message, @i2c_retry_count)
+  end
+
+  def send_request(message) do
+    send_request(@name, message)
   end
 
   @doc """
   Get a response to a previously send request to the GrovePi. This is
   not normally called directly.
   """
-  @spec get_response(integer) :: binary | {:error, term}
+  @spec get_response(GenServer.server, integer) :: binary | {:error, term}
+  def get_response(board, len) do
+    get_response_with_retry(board, len, @i2c_retry_count)
+  end
+
   def get_response(len) do
-    get_response_with_retry(len, @i2c_retry_count)
+    get_response(@name, len)
   end
 
   @doc """
@@ -63,18 +72,18 @@ defmodule GrovePi.Board do
 
   # The GrovePi has intermittent I2C communication failures. These
   # are usually harmless, so automatically retry.
-  defp send_request_with_retry(_message, 0), do: {:error, :too_many_retries}
-  defp send_request_with_retry(message, retries_left) do
-    case @i2c.write(__MODULE__, message) do
-      {:error, _} -> send_request_with_retry(message, retries_left - 1)
+  defp send_request_with_retry(_board, _message, 0), do: {:error, :too_many_retries}
+  defp send_request_with_retry(board, message, retries_left) do
+    case @i2c.write(board, message) do
+      {:error, _} -> send_request_with_retry(board, message, retries_left - 1)
       response -> response
     end
   end
 
-  defp get_response_with_retry(_len, 0), do: {:error, :too_many_retries}
-  defp get_response_with_retry(len, retries_left) do
-    case @i2c.read(__MODULE__, len) do
-      {:error, _} -> get_response_with_retry(len, retries_left - 1)
+  defp get_response_with_retry(_board, _len, 0), do: {:error, :too_many_retries}
+  defp get_response_with_retry(board, len, retries_left) do
+    case @i2c.read(board, len) do
+      {:error, _} -> get_response_with_retry(board, len, retries_left - 1)
       response -> response
     end
   end

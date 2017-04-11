@@ -20,14 +20,20 @@ defmodule GrovePi.Digital do
 
   """
 
+  @board GrovePi.Board
+
   def set_pin_mode(pin, pin_mode) do
     GrovePi.Board.send_request(<<5, pin, mode(pin_mode), 0>>)
   end
 
-  def read(pin) do
-    :ok = GrovePi.Board.send_request(<<1, pin, 0, 0>>)
-    <<value>> = GrovePi.Board.get_response(1)
+  def read(board, pin) do
+    :ok = GrovePi.Board.send_request(board, <<1, pin, 0, 0>>)
+    <<value>> = GrovePi.Board.get_response(board, 1)
     value
+  end
+
+  def read(pin) do
+    read(@board, pin)
   end
 
   def write(pin, value) when value == 0 or value == 1 do
