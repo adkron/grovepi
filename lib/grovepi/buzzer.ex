@@ -18,6 +18,7 @@ defmodule GrovePi.Buzzer do
   @type duration :: integer
 
   alias GrovePi.Utils
+  alias GrovePi.Registry.Pin
 
 
   defmodule State do
@@ -28,19 +29,19 @@ defmodule GrovePi.Buzzer do
 
   @spec start_link(GrovePi.pin) :: Supervisor.on_start
   def start_link(pin, opts \\ []) do
-    opts = Keyword.put(opts, :name, Utils.pin_name(pin))
+    opts = Keyword.put(opts, :name, Pin.name(pin))
 
     GenServer.start_link(__MODULE__, [pin], opts)
   end
 
   @spec buzz(GrovePi.pin, duration) :: :ok
   def buzz(pin, duration \\ 1000) do
-    GenServer.cast(Utils.pin_name(pin), {:buzz, duration})
+    GenServer.cast(Pin.name(pin), {:buzz, duration})
   end
 
   @spec off(GrovePi.pin) :: :ok
   def off(pin) do
-    GenServer.cast(Utils.pin_name(pin), :off)
+    GenServer.cast(Pin.name(pin), :off)
   end
 
   def init([pin]) do
