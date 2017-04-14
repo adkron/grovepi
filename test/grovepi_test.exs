@@ -1,5 +1,6 @@
 defmodule GrovePi.GrovePiTest do
   use ExUnit.Case, async: true
+  @moduletag report: [:prefix, :board]
 
   setup do
     prefix = String.to_atom(Time.to_string(Time.utc_now))
