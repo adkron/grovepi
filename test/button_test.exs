@@ -56,7 +56,7 @@ defmodule GrovePi.ButtonTest do
       assert_receive {@pin, :released}, 300
     end
 
-    @tag poll_interval: 1000000
+    @tag poll_interval: 1_000_000
     test "reading notifies subscribers",
       %{prefix: prefix, board: board} do
       GrovePi.Button.subscribe(@pin, :released, prefix)
