@@ -8,7 +8,7 @@ defmodule GrovePi.ButtonTest do
   def start_button(prefix, poll_interval) do
     with {:ok, _} <- GrovePi.Supervisor.start_link(0x40, prefix),
          {:ok, _} <- GrovePi.Button.start_link(@pin,
-                                          poll_unterval: poll_interval,
+                                          poll_interval: poll_interval,
                                           prefix: prefix,
                                         ),
     do: :ok
