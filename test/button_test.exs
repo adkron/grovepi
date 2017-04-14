@@ -14,14 +14,6 @@ defmodule GrovePi.ButtonTest do
     do: :ok
   end
 
-  def setup_sub(prefix, action) do
-    GrovePi.Button.subscribe(@pin, action, prefix)
-  end
-
-  def setup_resp(board, actions) do
-    GrovePi.I2C.add_responses(board, actions)
-  end
-
   describe "default button" do
     setup tags do
       prefix = Time.to_string(Time.utc_now)
@@ -37,16 +29,16 @@ defmodule GrovePi.ButtonTest do
 
     test "registering for a pressed event receives pressed messages",
       %{prefix: prefix, board: board} do
-      setup_sub(prefix, :pressed)
-      setup_resp(board, [@pressed])
+      GrovePi.Button.subscribe(@pin, :pressed, prefix)
+      GrovePi.I2C.add_responses(board, [@pressed])
 
       assert_receive {@pin, :pressed}, 300
     end
 
     test "registering for a released event receives released messages",
       %{prefix: prefix, board: board} do
-      setup_sub(prefix, :released)
-      setup_resp(board, [@pressed, @released])
+      GrovePi.Button.subscribe(@pin, :released, prefix)
+      GrovePi.I2C.add_responses(board, [@pressed, @released])
 
       assert_receive {@pin, :released}, 300
     end
@@ -54,8 +46,8 @@ defmodule GrovePi.ButtonTest do
     @tag :capture_log
     test "recovers from I2C error",
       %{prefix: prefix, board: board} do
-      setup_sub(prefix, :released)
-      setup_resp(board, [
+      GrovePi.Button.subscribe(@pin, :released, prefix)
+      GrovePi.I2C.add_responses(board, [
                   {:error, :i2c_write_failed},
                   @pressed,
                   @released,
@@ -67,9 +59,9 @@ defmodule GrovePi.ButtonTest do
     @tag poll_interval: 1000000
     test "reading notifies subscribers",
       %{prefix: prefix, board: board} do
-      setup_sub(prefix, :released)
-      setup_sub(prefix, :pressed)
-      setup_resp(board, [@pressed, @released, @pressed])
+      GrovePi.Button.subscribe(@pin, :released, prefix)
+      GrovePi.Button.subscribe(@pin, :pressed, prefix)
+      GrovePi.I2C.add_responses(board, [@pressed, @released, @pressed])
 
       GrovePi.Button.read(@pin, prefix)
 
