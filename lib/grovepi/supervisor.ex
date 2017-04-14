@@ -7,10 +7,10 @@ defmodule GrovePi.Supervisor do
 
   def init([grovepi_address, prefix]) do
     children = [
-      supervisor(GrovePi.Registry.Pin, []),
-      supervisor(GrovePi.Registry.Subscriber, []),
+      supervisor(GrovePi.Registry.Pin, [prefix]),
+      supervisor(GrovePi.Registry.Subscriber, [prefix]),
 
-      worker(GrovePi.Board, [grovepi_address]),
+      worker(GrovePi.Board, [grovepi_address, prefix]),
     ]
 
     supervise children, strategy: :one_for_one, name: name(prefix)
