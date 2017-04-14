@@ -16,7 +16,7 @@ defmodule GrovePi.ButtonTest do
 
   describe "default button" do
     setup tags do
-      prefix = Time.to_string(Time.utc_now)
+      prefix = String.to_atom(Time.to_string(Time.utc_now))
       board = GrovePi.Board.i2c_name(prefix)
       poll_interval = Map.get(tags, :poll_interval, 1)
 
