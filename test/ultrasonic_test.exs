@@ -1,6 +1,7 @@
 defmodule GrovePi.UltrasonicTest do
   use ExUnit.Case, async: true
   @pin 5
+  @moduletag report: [:prefix, :board]
 
   def start_ultrasonic(prefix) do
     with {:ok, _} <- GrovePi.Supervisor.start_link(0x40, prefix),
