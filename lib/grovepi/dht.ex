@@ -22,29 +22,29 @@ defmodule GrovePi.DHT do
 
   defmodule State do
     @moduledoc false
-    defstruct [:pin]
+    defstruct [:pin, :prefix]
   end
 
-  @spec start_link(GrovePi.pin) :: Supervisor.on_start
+  @spec start_link(GrovePi.pin, atom) :: Supervisor.on_start
   def start_link(pin, opts \\ []) do
-    opts = Keyword.put(opts, :name, Pin.name(pin))
-    GenServer.start_link(__MODULE__, [pin], opts)
+    prefix = Keyword.get(opts, :prefix, Default)
+    opts = Keyword.put(opts, :name, Pin.name(prefix, pin))
+    GenServer.start_link(__MODULE__, [pin, prefix], opts)
   end
 
-  def init([pin]) do
-    {:ok, %State{pin: pin}}
+  def init([pin, prefix]) do
+    {:ok, %State{pin: pin, prefix: prefix}}
   end
 
-  @spec read_temp_and_humidity(GrovePi.pin) :: {temp, humidity}
-  @spec read_temp_and_humidity(GrovePi.pin, module_type) :: {temp, humidity}
-  def read_temp_and_humidity(pin, module_type \\ 0) do
-    GenServer.call(Pin.name(pin), {:read_temp_and_humidity, module_type})
+  @spec read_temp_and_humidity(GrovePi.pin, atom, module_type) :: {temp, humidity}
+  def read_temp_and_humidity(pin, prefix \\ Default, module_type \\ 0) do
+    GenServer.call(Pin.name(prefix, pin), {:read_temp_and_humidity, module_type})
   end
 
   def handle_call({:read_temp_and_humidity, module_type}, _from, state) do
-    :ok = GrovePi.Board.send_request(<<40, state.pin, module_type, 0>>)
+    :ok = GrovePi.Board.send_request(state.prefix, <<40, state.pin, module_type, 0>>)
     <<_, temp::little-float-size(32), humidity::little-float-size(32)>> =
-      GrovePi.Board.get_response(9)
+      GrovePi.Board.get_response(state.prefix, 9)
       {:reply, {temp, humidity}, state}
   end
 end

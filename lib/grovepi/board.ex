@@ -14,25 +14,27 @@ defmodule GrovePi.Board do
   """
 
   use GrovePi.I2C
-  @name __MODULE__
-
   @i2c_retry_count 2
 
   @doc """
   """
-  @spec start_link(byte) :: {:ok, pid} | {:error, any}
-  def start_link(address, opts \\ []) when is_integer(address) do
-    opts = Keyword.put_new(opts, :name, @name)
+  @spec start_link(byte, atom) :: {:ok, pid} | {:error, any}
+  def start_link(address, prefix, opts \\ []) when is_integer(address) do
+    opts = Keyword.put_new(opts, :name, i2c_name(prefix))
     @i2c.start_link("i2c-1", address, opts)
+  end
+
+  def i2c_name(prefix) do
+    String.to_atom("#{prefix}.#{__MODULE__}")
   end
 
   @doc """
   Get the version of firmware running on the GrovePi's microcontroller.
   """
-  @spec firmware_version() :: binary | {:error, term}
-  def firmware_version() do
-    with :ok <- send_request(<<8, 0, 0, 0>>),
-         <<_, major, minor, patch>> <- get_response(4),
+  @spec firmware_version(atom) :: binary | {:error, term}
+  def firmware_version(prefix \\ Default) do
+    with :ok <- send_request(prefix, <<8, 0, 0, 0>>),
+         <<_, major, minor, patch>> <- get_response(prefix, 4),
          do: "#{major}.#{minor}.#{patch}"
   end
 
@@ -41,25 +43,26 @@ defmodule GrovePi.Board do
   except when interacting with an unsupported sensor.
   """
   @spec send_request(GenServer.server, binary) :: :ok | {:error, term}
-  def send_request(board, message) when byte_size(message) == 4 do
-    send_request_with_retry(board, message, @i2c_retry_count)
+  def send_request(prefix, message) when byte_size(message) == 4 do
+    send_request_with_retry(i2c_name(prefix), message, @i2c_retry_count)
   end
 
   def send_request(message) do
-    send_request(@name, message)
+    send_request(Default, message)
   end
 
   @doc """
   Get a response to a previously send request to the GrovePi. This is
   not normally called directly.
   """
-  @spec get_response(GenServer.server, integer) :: binary | {:error, term}
-  def get_response(board, len) do
-    get_response_with_retry(board, len, @i2c_retry_count)
+  @spec get_response(atom, integer) :: binary | {:error, term}
+  def get_response(prefix, len) do
+    get_response_with_retry(i2c_name(prefix), len, @i2c_retry_count)
   end
 
+  @spec get_response(integer) :: binary | {:error, term}
   def get_response(len) do
-    get_response(@name, len)
+    get_response(Default, len)
   end
 
   @doc """
@@ -67,7 +70,7 @@ defmodule GrovePi.Board do
   that are not controlled by the GrovePi's microcontroller.
   """
   def i2c_write_device(address, buffer) do
-    @i2c.write_device(__MODULE__, address, buffer)
+    @i2c.write_device(i2c_name(Default), address, buffer)
   end
 
   # The GrovePi has intermittent I2C communication failures. These

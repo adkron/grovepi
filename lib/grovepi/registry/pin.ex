@@ -1,17 +1,16 @@
 defmodule GrovePi.Registry.Pin do
-  @registry __MODULE__
-
-  @spec start_link(Registry.registry) :: Supervisor.on_start
-  def start_link(registry \\ @registry, opts \\ []) do
+  @spec start_link(atom) :: Supervisor.on_start
+  def start_link(prefix, opts \\ []) do
     opts = Keyword.put(opts, :id, :pin_registry)
-    Registry.start_link(:unique, registry, opts)
+
+    Registry.start_link(:unique, registry(prefix), opts)
   end
 
-  def name(registry, pin) do
-    {:via, Registry, {registry, pin}}
+  def name(prefix, pin) do
+    {:via, Registry, {registry(prefix), pin}}
   end
 
-  def name(pin) do
-    name(@registry, pin)
+  def registry(prefix) do
+    String.to_atom("#{prefix}.#{__MODULE__}")
   end
 end

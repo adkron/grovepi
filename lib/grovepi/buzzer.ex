@@ -23,28 +23,39 @@ defmodule GrovePi.Buzzer do
   defmodule State do
     @moduledoc false
     defstruct [:pin,
-               :turnoff_time]
+               :turnoff_time,
+               :prefix,
+             ]
   end
 
-  @spec start_link(GrovePi.pin) :: Supervisor.on_start
+  @spec start_link(GrovePi.pin, atom) :: Supervisor.on_start
   def start_link(pin, opts \\ []) do
-    opts = Keyword.put(opts, :name, Pin.name(pin))
+    prefix = Keyword.get(opts, :prefix, Default)
+    opts = Keyword.put(opts, :name, Pin.name(prefix, pin))
 
-    GenServer.start_link(__MODULE__, [pin], opts)
+    GenServer.start_link(__MODULE__, [pin, prefix], opts)
   end
 
-  @spec buzz(GrovePi.pin, duration) :: :ok
-  def buzz(pin, duration \\ 1000) do
-    GenServer.cast(Pin.name(pin), {:buzz, duration})
+  @spec buzz(GrovePi.pin, duration, atom) :: :ok
+  def buzz(pin, duration, prefix) do
+    GenServer.cast(Pin.name(prefix, pin), {:buzz, duration})
+  end
+
+  def buzz(pin, duration_or_prefix) when is_atom(duration_or_prefix) do
+    buzz(pin, 1000, duration_or_prefix)
+  end
+
+  def buzz(pin, duration_or_prefix) when is_integer(duration_or_prefix) do
+    buzz(pin, duration_or_prefix, Default)
   end
 
   @spec off(GrovePi.pin) :: :ok
-  def off(pin) do
-    GenServer.cast(Pin.name(pin), :off)
+  def off(pin, prefix \\ Default) do
+    GenServer.cast(Pin.name(prefix, pin), :off)
   end
 
-  def init([pin]) do
-    state = %State{pin: pin}
+  def init([pin, prefix]) do
+    state = %State{pin: pin, prefix: prefix}
 
     send(self(), :setup_pin)
 
@@ -52,7 +63,7 @@ defmodule GrovePi.Buzzer do
   end
 
   def handle_cast(:off, state) do
-    :ok = GrovePi.Digital.write(state.pin, 0)
+    :ok = GrovePi.Digital.write(state.prefix, state.pin, 0)
     {:noreply, state}
   end
 
@@ -60,7 +71,7 @@ defmodule GrovePi.Buzzer do
     turnoff_at = System.monotonic_time(:millisecond) + duration
     new_state = %{state | turnoff_time: turnoff_at}
 
-    :ok = GrovePi.Digital.write(state.pin, 1)
+    :ok = GrovePi.Digital.write(state.prefix, state.pin, 1)
     :timer.send_after(duration, self(), :timeout)
 
     {:noreply, new_state}
@@ -69,14 +80,14 @@ defmodule GrovePi.Buzzer do
   def handle_info(:setup_pin, state) do
     # Turn off the buzzer on initialization just in case it happens to be
     # on from a previous crash.
-    :ok = GrovePi.Digital.set_pin_mode(state.pin, :output)
-    :ok = GrovePi.Digital.write(state.pin, 0)
+    :ok = GrovePi.Digital.set_pin_mode(state.prefix, state.pin, :output)
+    :ok = GrovePi.Digital.write(state.prefix, state.pin, 0)
     {:noreply, state}
   end
 
   def handle_info(:timeout, state) do
     if System.monotonic_time(:millisecond) >= state.turnoff_time do
-      :ok = GrovePi.Digital.write(state.pin, 0)
+      :ok = GrovePi.Digital.write(state.prefix, state.pin, 0)
     end
     {:noreply, state}
   end
