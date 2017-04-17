@@ -1,25 +1,11 @@
 defmodule GrovePi.BuzzerTest do
-  use ExUnit.Case, async: true
+  use ComponentTestCase, async: true
   @on 1
   @off 0
-  @pin 5
-  @moduletag report: [:prefix, :board]
 
-  def start_buzzer(prefix) do
-    with {:ok, _} <- GrovePi.Supervisor.start_link(0x40, prefix),
-         {:ok, _} = GrovePi.Buzzer.start_link(@pin, prefix: prefix),
-    do: :ok
-  end
-
-  setup do
-    prefix = String.to_atom(Time.to_string(Time.utc_now))
-    board = GrovePi.Board.i2c_name(prefix)
-
-    start_buzzer(prefix)
-
-    GrovePi.I2C.reset(board)
-
-    {:ok, [prefix: prefix, board: board]}
+  setup %{prefix: prefix} = tags do
+    {:ok, _} = GrovePi.Buzzer.start_link(@pin, prefix: prefix)
+    {:ok, tags}
   end
 
   test "buzzes for one second by default",
