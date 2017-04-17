@@ -1,15 +1,5 @@
 defmodule GrovePi.GrovePiTest do
-  use ExUnit.Case, async: true
-  @moduletag report: [:prefix, :board]
-
-  setup do
-    prefix = String.to_atom(Time.to_string(Time.utc_now))
-    board = GrovePi.Board.i2c_name(prefix)
-
-    GrovePi.Board.start_link(0x40, prefix)
-    GrovePi.I2C.reset(board)
-    {:ok, [prefix: prefix, board: board]}
-  end
+  use ComponentTestCase, async: true
 
   test "getting version works",
     %{prefix: prefix, board: board} do
