@@ -22,16 +22,6 @@ defmodule GrovePi do
   @type pin :: integer
 
   def start(_type, _args) do
-    import Supervisor.Spec, warn: false
-
-    children = [
-      supervisor(Registry, [:unique, GrovePi.PinRegistry], id: :pin_registry),
-      supervisor(Registry, [:duplicate, GrovePi.SubscriberRegistry], id: :subscriber_registry),
-
-      worker(GrovePi.Board, [@grovepi_address]),
-    ]
-
-    opts = [strategy: :one_for_one, name: GrovePi.Supervisor]
-    Supervisor.start_link(children, opts)
+    GrovePi.Supervisor.start_link(@grovepi_address, Default)
   end
 end

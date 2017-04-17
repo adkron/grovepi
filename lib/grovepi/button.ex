@@ -25,22 +25,34 @@ defmodule GrovePi.Button do
 
   @poll_interval 100
 
-  alias GrovePi.Utils
+  alias GrovePi.Registry.Pin
+
+  alias GrovePi.Registry.Subscriber
 
   defmodule State do
     @moduledoc false
-    defstruct [:pin, :value, :poll_interval]
+    defstruct [:pin, :value, :poll_interval, :prefix]
   end
 
   @spec start_link(GrovePi.pin) :: Supervisor.on_start
-  def start_link(pin, poll_interval \\ @poll_interval, opts \\ []) do
-    opts = Keyword.put(opts, :name, Utils.pin_name(pin))
-    GenServer.start_link(__MODULE__, [pin, poll_interval], opts)
+  def start_link(pin, opts \\ []) do
+    poll_interval = Keyword.get(opts, :poll_interval, @poll_interval)
+    prefix = Keyword.get(opts, :prefix, Default)
+    opts = Keyword.put(opts, :name, Pin.name(prefix, pin))
+
+    GenServer.start_link(__MODULE__,
+      [pin, poll_interval, prefix],
+      opts
+      )
   end
 
-  def init([pin, poll_interval]) do
-    state = %State{pin: pin, poll_interval: poll_interval}
-            |> update_value()
+  def init([pin, poll_interval, prefix]) do
+    state = %State{
+      pin: pin,
+      poll_interval: poll_interval,
+      prefix: prefix,
+      }
+      |> update_value()
 
     schedule_poll(state)
 
@@ -51,14 +63,14 @@ defmodule GrovePi.Button do
     Process.send_after(self(), :poll_button, poll_interval)
   end
 
-  @spec read(GrovePi.pin) :: level
-  def read(pin) do
-    GenServer.call(Utils.pin_name(pin), :read)
+  @spec read(GrovePi.pin, atom) :: level
+  def read(pin, prefix \\ Defualt) do
+    GenServer.call(Pin.name(prefix, pin), :read)
   end
 
-  @spec subscribe(GrovePi.pin, event) :: level
-  def subscribe(pin, event) do
-    Utils.subscribe({pin, event})
+  @spec subscribe(GrovePi.pin, event, atom) :: level
+  def subscribe(pin, event, prefix \\ Default) do
+    Subscriber.subscribe(prefix, {pin, event})
   end
 
   def handle_call(:read, _from, state) do
@@ -73,14 +85,16 @@ defmodule GrovePi.Button do
   end
 
   @spec update_value(State) ::State
-  def update_value(state) do
-    new_value = GrovePi.Digital.read(state.pin)
+  defp update_value(state) do
+    new_value = GrovePi.Digital.read(state.prefix, state.pin)
     update_value(state, state.value, new_value)
   end
 
   defp update_value(state, value, value), do: state
   defp update_value(state, _old_value, new_value) do
-    Utils.notify_change({state.pin, event(new_value)})
+    Subscriber.notify_change(state.prefix,
+                             {state.pin, event(new_value)}
+                           )
     %{state | value: new_value}
   end
 

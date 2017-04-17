@@ -16,7 +16,7 @@ defmodule GrovePi.Mixfile do
      source_url: @github,
      homepage_url: @homepage,
      docs: [extras: ["README.md"]],
-     aliases: ["docs": ["docs", &copy_images/1]],
+     aliases: aliases(),
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps()]
@@ -48,5 +48,11 @@ defmodule GrovePi.Mixfile do
   # Copy the images referenced by docs, since ex_doc doesn't do this.
   defp copy_images(_) do
     File.cp_r "assets", "doc/assets"
+  end
+
+  defp aliases do
+    [
+      "docs": ["docs", &copy_images/1],
+    ]
   end
 end

@@ -1,23 +1,32 @@
 defmodule GrovePi.UltrasonicTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   @pin 5
+  @moduletag report: [:prefix, :board]
 
-  setup do
-    {:ok, _} = GrovePi.Ultrasonic.start_link(@pin)
-
-    GrovePi.I2C.reset(GrovePi.Board)
-
-    :ok
+  def start_ultrasonic(prefix) do
+    with {:ok, _} <- GrovePi.Supervisor.start_link(0x40, prefix),
+         {:ok, _} = GrovePi.Ultrasonic.start_link(@pin, prefix: prefix),
+    do: :ok
   end
 
-  test "gets distance" do
+  setup do
+    prefix = String.to_atom(Time.to_string(Time.utc_now))
+    board = GrovePi.Board.i2c_name(prefix)
+
+    start_ultrasonic(prefix)
+
+    GrovePi.I2C.reset(board)
+
+    {:ok, [prefix: prefix, board: board]}
+  end
+
+  test "gets distance",
+    %{prefix: prefix, board: board} do
     distance = 20
 
-    GrovePi.I2C.add_response(GrovePi.Board, <<1, distance::big-integer-size(16)>>)
+    GrovePi.I2C.add_response(board, <<1, distance::big-integer-size(16)>>)
 
-    Process.sleep(61)
-
-    assert distance == GrovePi.Ultrasonic.read_distance(@pin)
-    assert <<7, @pin, 0, 0>> == GrovePi.I2C.get_last_write(GrovePi.Board)
+    assert distance == GrovePi.Ultrasonic.read_distance(@pin, prefix)
+    assert <<7, @pin, 0, 0>> == GrovePi.I2C.get_last_write(board)
   end
 end
