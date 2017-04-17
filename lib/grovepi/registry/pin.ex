@@ -1,4 +1,6 @@
 defmodule GrovePi.Registry.Pin do
+  @moduledoc false
+
   @spec start_link(atom) :: Supervisor.on_start
   def start_link(prefix, opts \\ []) do
     opts = Keyword.put(opts, :id, :pin_registry)

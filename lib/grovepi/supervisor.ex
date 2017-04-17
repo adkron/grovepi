@@ -1,4 +1,14 @@
 defmodule GrovePi.Supervisor do
+  @moduledoc """
+    This is the top level supervisor that is started by the grovepi application. You
+    can use this to start your own grovepi supervision tree by passing a prefix to the
+    `start_link` function.
+
+    ```elixir
+      iex> GrovePi.Supervisor.start_link(0x04, MyPrefix)
+      {:ok, #PID<0.100.0}
+    ```
+  """
   use Supervisor
 
   def start_link(grovepi_address, prefix) do
