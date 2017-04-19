@@ -64,7 +64,7 @@ defmodule GrovePi.Button do
   end
 
   @spec read(GrovePi.pin, atom) :: level
-  def read(pin, prefix \\ Defualt) do
+  def read(pin, prefix \\ Default) do
     GenServer.call(Pin.name(prefix, pin), :read)
   end
 
