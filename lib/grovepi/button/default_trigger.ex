@@ -5,20 +5,22 @@ defmodule GrovePi.Button.DefaultTrigger do
   The trigger state for the default trigger is a struct containing
   a `value` property.
 
-  iex> GrovePi.Button.DefaultTrigger.initial_state
-  %GrovePi.Button.DefaultTrigger.State{value: 0}
+  ## Examples
 
-  iex> GrovePi.Button.DefaultTrigger.update(0, %{value: 0})
-  {:ok, %{value: 0}}
+      iex> GrovePi.Button.DefaultTrigger.initial_state
+      %GrovePi.Button.DefaultTrigger.State{value: 0}
 
-  iex> GrovePi.Button.DefaultTrigger.update(1, %{value: 1})
-  {:ok, %{value: 1}}
+      iex> GrovePi.Button.DefaultTrigger.update(0, %{value: 0})
+      {:ok, %{value: 0}}
 
-  iex> GrovePi.Button.DefaultTrigger.update(0, %{value: 1})
-  {:released, %{value: 0}}
+      iex> GrovePi.Button.DefaultTrigger.update(1, %{value: 1})
+      {:ok, %{value: 1}}
 
-  iex> GrovePi.Button.DefaultTrigger.update(1, %{value: 0})
-  {:pressed, %{value: 1}}
+      iex> GrovePi.Button.DefaultTrigger.update(0, %{value: 1})
+      {:released, %{value: 0}}
+
+      iex> GrovePi.Button.DefaultTrigger.update(1, %{value: 0})
+      {:pressed, %{value: 1}}
   """
 
   defmodule State do
