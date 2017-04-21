@@ -35,6 +35,13 @@ defmodule GrovePi.Button do
     defstruct [:pin, :trigger_state, :poll_interval, :prefix, :trigger]
   end
 
+  @doc """
+  # Options
+
+    * `:poll_interval` - The time in ms between polling for state. Default: `100`
+    * `:trigger` - This is used to pass in a trigger to use for triggering events. Default: `GrovePi.Button.DefaultTrigger`
+  """
+
   @spec start_link(GrovePi.pin) :: Supervisor.on_start
   def start_link(pin, opts \\ []) do
     poll_interval = Keyword.get(opts, :poll_interval, @poll_interval)

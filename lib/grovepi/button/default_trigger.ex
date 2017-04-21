@@ -6,7 +6,6 @@ defmodule GrovePi.Button.DefaultTrigger do
   a `value` property.
 
   ## Examples
-
       iex> GrovePi.Button.DefaultTrigger.initial_state
       %GrovePi.Button.DefaultTrigger.State{value: 0}
 
