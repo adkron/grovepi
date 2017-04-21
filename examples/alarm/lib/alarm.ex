@@ -39,7 +39,7 @@ defmodule Alarm do
       {:ok, state}
     end
 
-    def handle_info({_, :pressed}, state) do
+    def handle_info({_, :pressed, _}, state) do
       IO.puts("Alert!!!!")
 
       # Sound the alarm, but only for a second
