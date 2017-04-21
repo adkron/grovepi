@@ -1,6 +1,11 @@
 defmodule GrovePi.Registry.Subscriber do
   @moduledoc false
 
+  @type event :: atom
+  @type package :: any
+  @type registration :: {GrovePi.pin, event}
+  @type message :: {GrovePi.pin, event, package}
+
   @spec start_link(Registry.registry) :: Supervisor.on_start
   def start_link(prefix, opts \\ []) do
     opts = Keyword.put(opts, :id, :subscriber_registry)
@@ -8,13 +13,13 @@ defmodule GrovePi.Registry.Subscriber do
   end
 
   @spec notify_change(atom, GrovePi.Buttons.message) :: :ok
-  def notify_change(prefix, message) do
-    Registry.dispatch(registry(prefix), message, fn(listeners) ->
+  def notify_change(prefix, {pin, event, _} = message) do
+    Registry.dispatch(registry(prefix), {pin, event}, fn(listeners) ->
       for {pid, :ok} <- listeners, do: send(pid, message)
     end)
   end
 
-  @spec subscribe(atom, GrovePi.Buttons.message) :: :ok | {:error, {:already_registered, pid}}
+  @spec subscribe(atom, registration) :: :ok | {:error, {:already_registered, pid}}
   def subscribe(prefix, message) do
     Registry.register(registry(prefix), message, :ok)
   end
