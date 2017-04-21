@@ -19,7 +19,7 @@ defmodule GrovePi.ButtonTest do
     GrovePi.Button.subscribe(@pin, :pressed, prefix)
     GrovePi.I2C.add_responses(board, [@pressed])
 
-    assert_receive {@pin, :pressed}, 300
+    assert_receive {@pin, :pressed, _}, 300
   end
 
   test "registering for a released event receives released messages",
@@ -27,7 +27,7 @@ defmodule GrovePi.ButtonTest do
     GrovePi.Button.subscribe(@pin, :released, prefix)
     GrovePi.I2C.add_responses(board, [@pressed, @released])
 
-    assert_receive {@pin, :released}, 300
+    assert_receive {@pin, :released, _}, 300
   end
 
   @tag :capture_log
@@ -40,7 +40,7 @@ defmodule GrovePi.ButtonTest do
                                 @released,
                               ])
 
-    assert_receive {@pin, :released}, 300
+    assert_receive {@pin, :released, _}, 300
   end
 
   @tag poll_interval: 1_000_000
@@ -52,10 +52,10 @@ defmodule GrovePi.ButtonTest do
 
     GrovePi.Button.read(@pin, prefix)
 
-    assert_receive {@pin, :pressed}, 10
+    assert_receive {@pin, :pressed, _}, 10
 
     GrovePi.Button.read(@pin, prefix)
 
-    assert_receive {@pin, :released}, 10
+    assert_receive {@pin, :released, _}, 10
   end
 end
