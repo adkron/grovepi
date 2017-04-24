@@ -4,7 +4,6 @@ defmodule GrovePi.Sound.HysteresisTrigger do
   @default_high_threshold 510
   @default_low_threshold 490
 
-
   @moduledoc """
   This is the default triggering mechanism for Sound events. Events
   are either `loud` or `quiet` and include the trigger state. It
