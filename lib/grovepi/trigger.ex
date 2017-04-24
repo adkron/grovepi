@@ -13,7 +13,14 @@ defmodule GrovePi.Trigger do
   """
   @callback init(args :: term) :: {:ok, state} | {:error, reason :: any}
 
-  @callback update(any, state) :: {event, state}
+
+  @doc """
+  The update callback receives a new value and a trigger state and returns
+  a tuple of `{:event_name, new_state}`.
+
+  If no event is needed to fire return `{:ok, new_state}`.
+  """
+  @callback update(value :: any, state) :: {:ok, state} | {event, state}
 
   def __using__(_) do
     quote location: :keep do
