@@ -2,8 +2,8 @@ defmodule GrovePi.Sound do
   use GrovePi.Poller, default_trigger: GrovePi.Sound.HysteresisTrigger, read_type: GrovePi.Analog.adc_level
 
   @moduledoc """
-  Listen for events from a GrovePi sound. There are two types of
-  events; loud and quiet. When registering for an event the sound
+  Listen for events from a GrovePi sound module. There are two types of
+  events by default; loud and quiet. When registering for an event the sound
   will then send a message of `{pin, :loud, {value: 1, last_event: :loud}` or
   `{pin, :quiet, {value: 0, last_event: :quiet}}`. The sound works by polling
   `GrovePi.Digital` on the pin that you have registered to a sound.
