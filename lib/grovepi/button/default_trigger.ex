@@ -1,4 +1,6 @@
 defmodule GrovePi.Button.DefaultTrigger do
+  @behaviour GrovePi.Trigger
+
   @moduledoc """
   This is the default triggering mechanism for Button events. Events
   are either `pressed` or `released` and include the trigger state.
@@ -6,8 +8,8 @@ defmodule GrovePi.Button.DefaultTrigger do
   a `value` property.
 
   ## Examples
-      iex> GrovePi.Button.DefaultTrigger.initial_state
-      %GrovePi.Button.DefaultTrigger.State{value: 0}
+      iex> GrovePi.Button.DefaultTrigger.init([])
+      {:ok, %GrovePi.Button.DefaultTrigger.State{value: 0}}
 
       iex> GrovePi.Button.DefaultTrigger.update(0, %{value: 0})
       {:ok, %{value: 0}}
@@ -27,8 +29,8 @@ defmodule GrovePi.Button.DefaultTrigger do
     defstruct value: 0
   end
 
-  def initial_state do
-    %State{}
+  def init(_) do
+    {:ok, %State{}}
   end
 
   def update(value, %{value: value} = state), do: {:ok, state}
