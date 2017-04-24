@@ -8,8 +8,6 @@ defmodule GrovePi.Poller do
 
       @poll_interval 100
 
-      @type event :: atom
-
       alias GrovePi.Registry.Pin
 
       alias GrovePi.Registry.Subscriber
@@ -23,29 +21,32 @@ defmodule GrovePi.Poller do
       # Options
 
       * `:poll_interval` - The time in ms between polling for state. Default: `100`
-      * `:trigger` - This is used to pass in a trigger to use for triggering events. Default: `GrovePi.Button.DefaultTrigger`
+      * `:trigger` - This is used to pass in a trigger to use for triggering events. See specific poller for defaults
+      * `:trigger_opts` - This is used to pass options to a trigger `init\1`. The default is `[]`
       """
 
       @spec start_link(GrovePi.pin) :: Supervisor.on_start
       def start_link(pin, opts \\ []) do
         poll_interval = Keyword.get(opts, :poll_interval, @poll_interval)
         trigger = Keyword.get(opts, :trigger, unquote(default_trigger))
+        trigger_opts = Keyword.get(opts, :trigger_opts, [])
         prefix = Keyword.get(opts, :prefix, Default)
         opts = Keyword.put(opts, :name, Pin.name(prefix, pin))
 
         GenServer.start_link(__MODULE__,
-                             [pin, poll_interval, prefix, trigger],
+                             [pin, poll_interval, prefix, trigger, trigger_opts],
                              opts
                            )
       end
 
-      def init([pin, poll_interval, prefix, trigger]) do
+      def init([pin, poll_interval, prefix, trigger, trigger_opts]) do
+        {:ok, trigger_state} = trigger.init(trigger_opts)
         state = %State{
           pin: pin,
           poll_interval: poll_interval,
           prefix: prefix,
           trigger: trigger,
-          trigger_state: trigger.initial_state,
+          trigger_state: trigger_state,
         }
 
         schedule_poll(state)
@@ -62,7 +63,7 @@ defmodule GrovePi.Poller do
         GenServer.call(Pin.name(prefix, pin), :read)
       end
 
-      @spec subscribe(GrovePi.pin, event, atom) :: {:ok, pid} | {:error, {:already_registered, pid}}
+      @spec subscribe(GrovePi.pin, GrovePi.Trigger.event, atom) :: {:ok, pid} | {:error, {:already_registered, pid}}
       def subscribe(pin, event, prefix \\ Default) do
         Subscriber.subscribe(prefix, {pin, event})
       end

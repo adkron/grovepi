@@ -4,8 +4,8 @@ defmodule GrovePi.Sound do
   @moduledoc """
   Listen for events from a GrovePi sound module. There are two types of
   events by default; loud and quiet. When registering for an event the sound
-  will then send a message of `{pin, :loud, {value: 1, last_event: :loud}` or
-  `{pin, :quiet, {value: 0, last_event: :quiet}}`. The sound works by polling
+  will then send a message of `{pin, :loud, _trigger_date}` or
+  `{pin, :quiet, _trigger_data}`. The sound works by polling
   `GrovePi.Analog` on the pin that you have registered to a sound.
 
   Example usage:
