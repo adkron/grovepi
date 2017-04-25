@@ -3,12 +3,9 @@
 [![Build Status](https://travis-ci.org/fhunleth/grovepi.svg?branch=master)](https://travis-ci.org/fhunleth/grovepi)
 [![Ebert](https://ebertapp.io/github/fhunleth/grovepi.svg)](https://ebertapp.io/github/fhunleth/grovepi)
 
-Use the [GrovePi][dexter] and sensors in Elixir
-on a Raspberry Pi. If you have a Beaglebone Green or other port that has direct
-access to sensors (rather than going through a GrovePi), take a look at
-[nerves_grove](https://github.com/bendiken/nerves_grove). This library will
-likely go through many changes in the coming months and possibly get merged into
-`nerves_grove` should there be enough overlap.
+Use the [GrovePi+][dexter] and sensors in Elixir on a Raspberry Pi. If you have
+a Beaglebone Green or other port that has direct access to sensors (rather than
+going through a GrovePi+), take a look at [nerves_grove][nerves_grove].
 
 ## Installation
 
@@ -17,47 +14,26 @@ by adding `grovepi` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:grovepi, "~> 0.1.0"}]
+  [{:grovepi, "~> 0.3.0"}]
 end
 ```
 
-But for now, add this:
+The `grovepi` library uses [elixir_ale][ale] for I2C communication to the
+GrovePi+. This only works on Raspberry Pi computers. If you're working on
+another platform, a stub is available for debugging and testing. When building
+`grovepi` standalone, be aware that `elixir_ale` is only used for `MIX_ENV=prod`
+builds. To use the stub in your own programs, add the following to your
+configuration:
 
 ```elixir
-def deps do
-  [{:grovepi, github: "fhunleth/grovepi", branch: "master"}]
-end
+  config :grovepi, :i2c, GrovePi.I2C
 ```
 
-GrovePi uses [elixir_ale][ale] for I2C communication.
-On some platforms `elixir_ale` does not compile so you may need to
-configure a stand in. Due to this limitation `elixir_ale` is not included
-except in the production environment. If you need it outside of
-production be sure to add it to your dependencies.
+## API Documentation
 
-```elixir
-def deps do
-  [
-   {:grovepi, "~> 0.1.0"},
-   {:elixir_ale, "~> 0.6"},
-  ]
-end
-```
+See the generated documentation at [hexdocs.pm/grovepi][docs].
 
-If you would like to use a stub in your tests you can configure
-a module to be used for I2C in you configuration.
-
-```elixir
-  config :grovepi, :i2c, MyI2C
-```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/grovepi][docs].
-
-
-Contributions
-=============
+# Contributions
 
 We welcome contributions to tackle issues in GrovePi.
 
@@ -65,10 +41,10 @@ We welcome contributions to tackle issues in GrovePi.
 
 First fork the repository and fetch your own copy
 
-~~~bash
-  mix deps.get
-  mix test
-~~~
+```bash
+mix deps.get
+mix test
+```
 
 ## Submitting a Pull Request
 
@@ -87,9 +63,9 @@ All tests can be run with `mix test` or a single test file can be run
 with `mix test path/to/file_test.exs`.
 
 [dexter]: https://www.dexterindustries.com/grovepi/
+[nerves_grove]: https://github.com/bendiken/nerves_grove/
 [ale]: https://hex.pm/packages/elixir_ale
 [docs]: https://hexdocs.pm/grovepi
 [fork]: https://help.github.com/fork-a-repo/
-[branch]:
-https://help.github.com/articles/creating-and-deleting-branches-within-your-repository/
+[branch]: https://help.github.com/articles/creating-and-deleting-branches-within-your-repository/
 [pr]: https://help.github.com/articles/creating-a-pull-request/
