@@ -90,7 +90,7 @@ defmodule GrovePi.Poller do
 
       def handle_cast({:change_polling, interval}, %State{poll_reference: poll_reference} = state) do
         Process.cancel_timer(poll_reference)
-        {:noreply, schedule_poll(%{state | poll_interval: interval, poll_reference: nil}) }
+        {:noreply, schedule_poll(%{state | poll_interval: interval, poll_reference: nil})}
       end
 
       def handle_call(:read, _from, state) do
