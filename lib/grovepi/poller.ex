@@ -55,12 +55,6 @@ defmodule GrovePi.Poller do
         {:ok, state_with_poll_reference}
       end
 
-      def schedule_poll(%{poll_interval: 0} = state), do: state
-
-      def schedule_poll(%State{poll_interval: poll_interval} = state) do
-        %{state | poll_reference: Process.send_after(self(), :poll_button, poll_interval)}
-      end
-
       @doc """
         Stops polling immediately
       """
@@ -119,6 +113,13 @@ defmodule GrovePi.Poller do
       defp notify({event, trigger_state}, prefix, pin) do
         Subscriber.notify_change(prefix, {pin, event, trigger_state})
       end
+
+      defp schedule_poll(%{poll_interval: 0} = state), do: state
+
+      defp schedule_poll(%State{poll_interval: poll_interval} = state) do
+        %{state | poll_reference: Process.send_after(self(), :poll_button, poll_interval)}
+      end
+
     end
   end
 end
