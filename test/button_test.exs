@@ -14,22 +14,6 @@ defmodule GrovePi.ButtonTest do
       {:ok, tags}
   end
 
-  test "registering for a pressed event receives pressed messages",
-  %{prefix: prefix, board: board} do
-    GrovePi.Button.subscribe(@pin, :pressed, prefix)
-    GrovePi.I2C.add_responses(board, [@pressed])
-
-    assert_receive {@pin, :pressed, _}, 300
-  end
-
-  test "registering for a released event receives released messages",
-  %{prefix: prefix, board: board} do
-    GrovePi.Button.subscribe(@pin, :released, prefix)
-    GrovePi.I2C.add_responses(board, [@pressed, @released])
-
-    assert_receive {@pin, :released, _}, 300
-  end
-
   @tag :capture_log
   test "recovers from I2C error",
   %{prefix: prefix, board: board} do
@@ -44,18 +28,16 @@ defmodule GrovePi.ButtonTest do
   end
 
   @tag poll_interval: 1_000_000
-  test "reading notifies subscribers",
+  test "reading gets from the grovepi board",
   %{prefix: prefix, board: board} do
-    GrovePi.Button.subscribe(@pin, :released, prefix)
-    GrovePi.Button.subscribe(@pin, :pressed, prefix)
-    GrovePi.I2C.add_responses(board, [@pressed, @released, @pressed])
+    GrovePi.I2C.add_responses(board, [@pressed, @released])
 
-    GrovePi.Button.read(@pin, prefix)
+    assert GrovePi.Button.read(@pin, prefix) == 1
 
-    assert_receive {@pin, :pressed, _}, 10
+    assert <<1, @pin, 0, 0>> == GrovePi.I2C.get_last_write(board)
 
-    GrovePi.Button.read(@pin, prefix)
+    assert GrovePi.Button.read(@pin, prefix) == 0
 
-    assert_receive {@pin, :released, _}, 10
+    assert <<1, @pin, 0, 0>> == GrovePi.I2C.get_last_write(board)
   end
 end
