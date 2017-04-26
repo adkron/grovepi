@@ -62,5 +62,4 @@ defmodule GrovePi.Analog do
   def write(pin, value) do
     write(Default, pin, value)
   end
-
 end
