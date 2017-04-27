@@ -1,4 +1,5 @@
 defmodule GrovePi.I2C do
+  @moduledoc false
   use GenServer
   alias GrovePi.I2C.State
 
@@ -40,7 +41,7 @@ defmodule GrovePi.I2C do
     GenServer.call(pid, :reset)
   end
 
-  def write_device(_,_,_), do: :ok
+  def write_device(_, _, _), do: :ok
 
   def handle_call({:write, message}, _from, state) do
     {:reply, :ok, State.add_input(state, message)}
