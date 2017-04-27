@@ -19,7 +19,8 @@ defmodule GrovePi.Registry.Subscriber do
     end)
   end
 
-  @spec subscribe(atom, registration) :: :ok | {:error, {:already_registered, pid}}
+  @spec subscribe(atom, registration)
+  :: :ok | {:error, {:already_registered, pid}}
   def subscribe(prefix, message) do
     Registry.register(registry(prefix), message, :ok)
   end

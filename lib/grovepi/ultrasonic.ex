@@ -42,10 +42,13 @@ defmodule GrovePi.Ultrasonic do
 
   def handle_call({:read_distance}, _from, state) do
     with :ok <- Board.send_request(state.prefix, <<7, state.pin, 0, 0>>),
-         # Firmware waits for 50 ms to read sensor
-         :ok <- Process.sleep(60),
-         <<_, distance::big-integer-size(16)>> <- Board.get_response(state.prefix, 3),
+         :ok <- wait_for_sensor(),
+         <<_, distance::big-integer-size(16)>> <-
+             Board.get_response(state.prefix, 3),
          do: {:reply, distance, state}
   end
 
+  defp wait_for_sensor do
+    Process.sleep 60
+  end
 end

@@ -1,4 +1,6 @@
 defmodule GrovePi.Digital do
+  alias GrovePi.Board
+
   @moduledoc """
   Write to and read digital I/O on the GrovePi.
 
@@ -21,7 +23,7 @@ defmodule GrovePi.Digital do
   """
 
   def set_pin_mode(prefix, pin, pin_mode) do
-    GrovePi.Board.send_request(prefix, <<5, pin, mode(pin_mode), 0>>)
+    Board.send_request(prefix, <<5, pin, mode(pin_mode), 0>>)
   end
 
   def set_pin_mode(pin, pin_mode) do
@@ -29,8 +31,8 @@ defmodule GrovePi.Digital do
   end
 
   def read(prefix, pin) do
-    :ok = GrovePi.Board.send_request(prefix, <<1, pin, 0, 0>>)
-    <<value>> = GrovePi.Board.get_response(prefix, 1)
+    :ok = Board.send_request(prefix, <<1, pin, 0, 0>>)
+    <<value>> = Board.get_response(prefix, 1)
     value
   end
 
@@ -39,7 +41,7 @@ defmodule GrovePi.Digital do
   end
 
   def write(prefix, pin, value) when value == 0 or value == 1 do
-    GrovePi.Board.send_request(prefix, <<2, pin, value, 0>>)
+    Board.send_request(prefix, <<2, pin, value, 0>>)
   end
 
   def write(pin, value) do

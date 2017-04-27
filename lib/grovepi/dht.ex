@@ -1,4 +1,6 @@
 defmodule GrovePi.DHT do
+  alias GrovePi.Board
+
   @moduledoc """
   Read temperature and humidity from the Grove DHT sensor.
 
@@ -36,15 +38,17 @@ defmodule GrovePi.DHT do
     {:ok, %State{pin: pin, prefix: prefix}}
   end
 
-  @spec read_temp_and_humidity(GrovePi.pin, atom, module_type) :: {temp, humidity}
+  @spec read_temp_and_humidity(GrovePi.pin, atom, module_type)
+  :: {temp, humidity}
   def read_temp_and_humidity(pin, prefix \\ Default, module_type \\ 0) do
-    GenServer.call(Pin.name(prefix, pin), {:read_temp_and_humidity, module_type})
+    pin_process = Pin.name(prefix, pin)
+    GenServer.call(pin_process, {:read_temp_and_humidity, module_type})
   end
 
   def handle_call({:read_temp_and_humidity, module_type}, _from, state) do
-    :ok = GrovePi.Board.send_request(state.prefix, <<40, state.pin, module_type, 0>>)
+    :ok = Board.send_request(state.prefix, <<40, state.pin, module_type, 0>>)
     <<_, temp::little-float-size(32), humidity::little-float-size(32)>> =
-      GrovePi.Board.get_response(state.prefix, 9)
+      Board.get_response(state.prefix, 9)
       {:reply, {temp, humidity}, state}
   end
 end

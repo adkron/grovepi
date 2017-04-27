@@ -1,4 +1,6 @@
 defmodule GrovePi.Analog do
+  alias GrovePi.Board
+
   @moduledoc ~S"""
   Perform analog I/O using the GrovePi. Analog reads return 10-bit values
   (0-1023) from analog to digital converters on the GrovePi. These values
@@ -39,8 +41,8 @@ defmodule GrovePi.Analog do
   """
   @spec read(atom, GrovePi.pin) :: adc_level | {:error, term}
   def read(prefix, pin) do
-    with :ok <- GrovePi.Board.send_request(prefix, <<3, pin, 0, 0>>),
-         <<_, value::size(16)>> <- GrovePi.Board.get_response(prefix, 3),
+    with :ok <- Board.send_request(prefix, <<3, pin, 0, 0>>),
+         <<_, value::size(16)>> <- Board.get_response(prefix, 3),
          do: value
   end
 
@@ -56,7 +58,7 @@ defmodule GrovePi.Analog do
   """
   @spec write(GrovePi.pin, pwm) :: :ok | {:error, term}
   def write(prefix, pin, value) do
-    GrovePi.Board.send_request(prefix, <<4, pin, value, 0>>)
+    Board.send_request(prefix, <<4, pin, value, 0>>)
   end
 
   def write(pin, value) do

@@ -1,5 +1,8 @@
 defmodule GrovePi.Button do
-  use GrovePi.Poller, default_trigger: GrovePi.Button.DefaultTrigger, read_type: GrovePi.Digital.level
+  alias GrovePi.Digital
+
+  use GrovePi.Poller, default_trigger: GrovePi.Button.DefaultTrigger,
+  read_type: Digital.level
 
   @moduledoc """
   Listen for events from a GrovePi button. There are two types of
@@ -20,6 +23,6 @@ defmodule GrovePi.Button do
   """
 
   def read_value(prefix, pin) do
-    GrovePi.Digital.read(prefix, pin)
+    Digital.read(prefix, pin)
   end
 end

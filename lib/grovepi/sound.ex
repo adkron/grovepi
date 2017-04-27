@@ -1,5 +1,8 @@
 defmodule GrovePi.Sound do
-  use GrovePi.Poller, default_trigger: GrovePi.Sound.HysteresisTrigger, read_type: GrovePi.Analog.adc_level
+  alias GrovePi.Analog
+
+  use GrovePi.Poller, default_trigger: GrovePi.Sound.HysteresisTrigger,
+  read_type: Analog.adc_level
 
   @moduledoc """
   Listen for events from a GrovePi sound module. There are two types of
@@ -20,6 +23,6 @@ defmodule GrovePi.Sound do
   """
 
   def read_value(prefix, pin) do
-    GrovePi.Analog.read(prefix, pin)
+    Analog.read(prefix, pin)
   end
 end

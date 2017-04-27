@@ -16,8 +16,6 @@ defmodule GrovePi.Sound.HysteresisTrigger do
   is to keep from having a trigger float near the trigger value and
   become excessively noisy.
 
-
-
   ## Examples
       iex> GrovePi.Sound.HysteresisTrigger.init([])
       {:ok, %GrovePi.Sound.HysteresisTrigger.State{value: 500, fireable: :any, low_threshold: 490, high_threshold: 510}}
@@ -71,7 +69,12 @@ defmodule GrovePi.Sound.HysteresisTrigger do
   defmodule State do
     @moduledoc false
     @enforce_keys [:high_threshold, :low_threshold]
-    defstruct value: 500, fireable: :any, high_threshold: nil, low_threshold: nil
+    defstruct [
+                value: 500,
+                fireable: :any,
+                high_threshold: nil,
+                low_threshold: nil,
+              ]
   end
 
   @doc """
