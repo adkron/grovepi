@@ -62,6 +62,9 @@ mix test
 All tests can be run with `mix test` or a single test file can be run
 with `mix test path/to/file_test.exs`.
 
+If you would like tests to run in the background as you change files you
+can run `mix test.watch`.
+
 [dexter]: https://www.dexterindustries.com/grovepi/
 [nerves_grove]: https://github.com/bendiken/nerves_grove/
 [ale]: https://hex.pm/packages/elixir_ale
