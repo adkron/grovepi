@@ -11,9 +11,9 @@ defmodule GrovePi.BuzzerTest do
   test "buzzes for one second by default",
     %{prefix: prefix, board: board} do
     GrovePi.Buzzer.buzz(@pin, prefix)
-    Process.sleep 1010
-    {off_time, <<2, @pin, @off, 0>>} = GrovePi.I2C.get_last_write(board, include_time: true)
-    {on_time, <<2, @pin, @on, 0>>} = GrovePi.I2C.get_last_write(board, include_time: true)
+    Process.sleep 1050
+    {off_time, _, <<2, @pin, @off, 0>>} = GrovePi.I2C.get_last_write(board, include_time: true)
+    {on_time, _, <<2, @pin, @on, 0>>} = GrovePi.I2C.get_last_write(board, include_time: true)
 
     assert_in_delta (off_time - on_time), 1000, 10
   end
@@ -22,9 +22,9 @@ defmodule GrovePi.BuzzerTest do
     %{prefix: prefix, board: board} do
     interval = 1
     GrovePi.Buzzer.buzz(@pin, interval, prefix)
-    Process.sleep interval + 10
-    {off_time, <<2, @pin, @off, 0>>} = GrovePi.I2C.get_last_write(board, include_time: true)
-    {on_time, <<2, @pin, @on, 0>>} = GrovePi.I2C.get_last_write(board, include_time: true)
+    Process.sleep interval + 50
+    {off_time, _, <<2, @pin, @off, 0>>} = GrovePi.I2C.get_last_write(board, include_time: true)
+    {on_time, _, <<2, @pin, @on, 0>>} = GrovePi.I2C.get_last_write(board, include_time: true)
 
     assert_in_delta (off_time - on_time), interval, 10
   end

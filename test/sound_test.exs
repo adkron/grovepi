@@ -34,10 +34,12 @@ defmodule GrovePi.SoundTest do
 
     assert GrovePi.Sound.read(@pin, prefix) == 511
 
-    assert <<3, @pin, 0, 0>> == GrovePi.I2C.get_last_write(board)
+    {_, last_write} = GrovePi.I2C.get_last_write(board)
+    assert last_write == <<3, @pin, 0, 0>>
 
     assert GrovePi.Sound.read(@pin, prefix) == 489
 
-    assert <<3, @pin, 0, 0>> == GrovePi.I2C.get_last_write(board)
+    {_, last_write} = GrovePi.I2C.get_last_write(board)
+    assert last_write == <<3, @pin, 0, 0>>
   end
 end

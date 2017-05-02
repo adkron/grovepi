@@ -12,8 +12,8 @@ defmodule GrovePi.I2C do
   @type i2c_address :: 0..127
 
   @spec start_link(binary, i2c_address, [term]) :: {:ok, pid}
-  def start_link(_devname, _address, opts \\ []) do
-    GenServer.start_link(__MODULE__, %State{}, opts)
+  def start_link(_devname, address, opts \\ []) do
+    GenServer.start_link(__MODULE__, %State{address: address}, opts)
   end
 
   def add_responses(pid, messages) do
@@ -41,7 +41,9 @@ defmodule GrovePi.I2C do
     GenServer.call(pid, :reset)
   end
 
-  def write_device(_, _, _), do: :ok
+  def write_device(pid, address, message) do
+    GenServer.call(pid, {:write, {address, message}})
+  end
 
   def handle_call({:write, message}, _from, state) do
     {:reply, :ok, State.add_input(state, message)}
@@ -53,8 +55,8 @@ defmodule GrovePi.I2C do
   end
 
   def handle_call({:get_last_write, []}, _from, state) do
-    {{_, message}, new_state} = State.pop_last_write(state)
-    {:reply, message, new_state}
+    {{_, address, message}, new_state} = State.pop_last_write(state)
+    {:reply, {address, message}, new_state}
   end
 
   def handle_call({:read,  _len}, _from, state) do
@@ -66,7 +68,7 @@ defmodule GrovePi.I2C do
     {:reply, :ok, State.add_responses(state, responses)}
   end
 
-  def handle_call(:reset, _from, _state) do
-    {:reply, :ok, %State{}}
+  def handle_call(:reset, _from, state) do
+    {:reply, :ok, %State{address: state.address}}
   end
 end

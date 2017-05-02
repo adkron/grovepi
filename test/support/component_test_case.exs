@@ -11,7 +11,7 @@ defmodule ComponentTestCase do
     prefix = String.to_atom("#{Time.to_string(Time.utc_now)}#{__MODULE__}")
     board = GrovePi.Board.i2c_name(prefix)
 
-    {:ok, _} = GrovePi.Supervisor.start_link(0x40, prefix)
+    {:ok, _} = GrovePi.Supervisor.start_link(0x04, prefix)
 
     GrovePi.I2C.reset(board)
 

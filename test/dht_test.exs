@@ -14,6 +14,6 @@ defmodule GrovePi.DHTTest do
     GrovePi.I2C.add_response(board, <<1, temp::little-float-size(32), humidity::little-float-size(32)>>)
 
     assert {temp, humidity} == GrovePi.DHT.read_temp_and_humidity(@pin, prefix)
-    assert <<40, @pin, 0, 0>> == GrovePi.I2C.get_last_write(board)
+    assert {4, <<40, @pin, 0, 0>>} == GrovePi.I2C.get_last_write(board)
   end
 end

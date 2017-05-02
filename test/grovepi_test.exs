@@ -6,8 +6,8 @@ defmodule GrovePi.GrovePiTest do
     GrovePi.I2C.add_response(board, <<0, 1, 2, 3>>)
 
     assert GrovePi.Board.firmware_version(prefix) == "1.2.3"
-    assert GrovePi.I2C.get_last_write(board) == <<8, 0, 0, 0>>
-    assert GrovePi.I2C.get_last_write(board) == :no_more_messages
+    assert GrovePi.I2C.get_last_write(board) == {4, <<8, 0, 0, 0>>}
+    assert GrovePi.I2C.get_last_write(board) == {:no_address, :no_more_messages}
   end
 
   test "getting version retries with I2C error",
@@ -16,7 +16,7 @@ defmodule GrovePi.GrovePiTest do
     GrovePi.I2C.add_response(board, <<0, 1, 2, 3>>)
 
     assert GrovePi.Board.firmware_version(prefix) == "1.2.3"
-    assert GrovePi.I2C.get_last_write(board) == <<8, 0, 0, 0>>
-    assert GrovePi.I2C.get_last_write(board) == :no_more_messages
+    assert GrovePi.I2C.get_last_write(board) == {4, <<8, 0, 0, 0>>}
+    assert GrovePi.I2C.get_last_write(board) == {:no_address, :no_more_messages}
   end
 end

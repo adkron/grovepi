@@ -1,9 +1,28 @@
 defmodule GrovePi.RGBLCD do
   @moduledoc """
   """
+  use Bitwise
 
   @rgb_address  0x62
   @text_address 0x3e
+
+  @lcd_cmd_clear 0x01
+  @lcd_cmd_home  0x02
+
+  # Display control
+  @lcd_cmd_dc    0x08
+  @lcd_cmd_dc_display_on    0x04
+  @lcd_cmd_dc_cursor_on     0x02
+  @lcd_cmd_dc_cursor_blink  0x01
+
+  # Function set
+  @lcd_cmd_fs    0x20
+  @lcd_cmd_fs_4bit          0x00
+  @lcd_cmd_fs_8bit          0x10
+  @lcd_cmd_fs_1line         0x00
+  @lcd_cmd_fs_2line         0x08
+  @lcd_cmd_fs_5x8font       0x00
+  @lcd_cmd_fs_5x10font      0x04
 
   alias GrovePi.Board
 
@@ -20,12 +39,16 @@ defmodule GrovePi.RGBLCD do
     Board.i2c_write_device(@rgb_address, <<2, b>>)
   end
 
+  def init() do
+    send_text_cmd(@lcd_cmd_clear)
+    Process.sleep(50)
+    send_text_cmd(@lcd_cmd_fs ||| @lcd_cmd_fs_2line ||| @lcd_cmd_fs_8bit ||| @lcd_cmd_fs_5x8font)
+    Process.sleep(50)
+    send_text_cmd(@lcd_cmd_dc ||| @lcd_cmd_dc_display_on)
+  end
+
   def set_text(text) do
-    send_text_cmd(0x01) # clear display
-    Process.sleep(50)
-    send_text_cmd(0x0c)
-    send_text_cmd(0x28)
-    Process.sleep(50)
+    send_text_cmd(@lcd_cmd_clear)
     send_chars(text)
   end
 
