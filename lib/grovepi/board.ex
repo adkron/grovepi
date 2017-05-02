@@ -47,10 +47,6 @@ defmodule GrovePi.Board do
     send_request_with_retry(i2c_name(prefix), message, @i2c_retry_count)
   end
 
-  def send_request(message) do
-    send_request(Default, message)
-  end
-
   @doc """
   Get a response to a previously send request to the GrovePi. This is
   not normally called directly.
@@ -60,17 +56,12 @@ defmodule GrovePi.Board do
     get_response_with_retry(i2c_name(prefix), len, @i2c_retry_count)
   end
 
-  @spec get_response(integer) :: binary | {:error, term}
-  def get_response(len) do
-    get_response(Default, len)
-  end
-
   @doc """
   Write directly to a device on the I2C bus. This is used for sensors
   that are not controlled by the GrovePi's microcontroller.
   """
-  def i2c_write_device(address, buffer) do
-    @i2c.write_device(i2c_name(Default), address, buffer)
+  def i2c_write_device(prefix, address, buffer) do
+    @i2c.write_device(i2c_name(prefix), address, buffer)
   end
 
   # The GrovePi has intermittent I2C communication failures. These

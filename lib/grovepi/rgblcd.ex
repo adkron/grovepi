@@ -26,43 +26,51 @@ defmodule GrovePi.RGBLCD do
 
   alias GrovePi.Board
 
+  @spec start_link(atom) :: Supervisor.on_start
+  def start_link(opts) do
+    prefix = Keyword.get(opts, :prefix, Default)
+    opts = Keyword.put(opts, :name, name(prefix))
+
+    GenServer.start_link(__MODULE__, [prefix], opts)
+  end
+
+  def name(prefix) do
+    String.to_atom("#{prefix}.#{__MODULE__}")
+  end
+
+  defmodule State do
+    @enforce_keys :prefix
+    defstruct [:prefix]
+  end
+
+  def init([prefix]) do
+    send self(), :setup
+    {:ok, %State{prefix: prefix}}
+  end
+
+  def handle_info(:setup, %{prefix: prefix} = state) do
+    send_text_cmd(prefix, @lcd_cmd_clear)
+    Process.sleep(50)
+    send_text_cmd(prefix, @lcd_cmd_fs ||| @lcd_cmd_fs_2line ||| @lcd_cmd_fs_8bit ||| @lcd_cmd_fs_5x8font)
+    Process.sleep(50)
+    send_text_cmd(prefix, @lcd_cmd_dc ||| @lcd_cmd_dc_display_on)
+    {:noreply, state}
+  end
+
   # Currently this is directly translated from Python
   # NOTE: Review datasheet, since this does not seem like
   #       the most efficient way of updating the display.
 
-  def set_rgb(r, g, b) do
-    Board.i2c_write_device(@rgb_address, <<0, 0>>)
-    Board.i2c_write_device(@rgb_address, <<1, 0>>)
-    Board.i2c_write_device(@rgb_address, <<8, 0xaa>>)
-    Board.i2c_write_device(@rgb_address, <<4, r>>)
-    Board.i2c_write_device(@rgb_address, <<3, g>>)
-    Board.i2c_write_device(@rgb_address, <<2, b>>)
-  end
+  #def set_rgb(r, g, b) do
+    #Board.i2c_write_device(@rgb_address, <<0, 0>>)
+    #Board.i2c_write_device(@rgb_address, <<1, 0>>)
+    #Board.i2c_write_device(@rgb_address, <<8, 0xaa>>)
+    #Board.i2c_write_device(@rgb_address, <<4, r>>)
+    #Board.i2c_write_device(@rgb_address, <<3, g>>)
+    #Board.i2c_write_device(@rgb_address, <<2, b>>)
+  #end
 
-  def init() do
-    send_text_cmd(@lcd_cmd_clear)
-    Process.sleep(50)
-    send_text_cmd(@lcd_cmd_fs ||| @lcd_cmd_fs_2line ||| @lcd_cmd_fs_8bit ||| @lcd_cmd_fs_5x8font)
-    Process.sleep(50)
-    send_text_cmd(@lcd_cmd_dc ||| @lcd_cmd_dc_display_on)
-  end
-
-  def set_text(text) do
-    send_text_cmd(@lcd_cmd_clear)
-    send_chars(text)
-  end
-
-  defp send_chars(<<>>), do: :ok
-  defp send_chars(<<?\n, rest::binary>>) do
-    send_text_cmd(0xc0)
-    send_chars(rest)
-  end
-  defp send_chars(<<c, rest::binary>>) do
-    Board.i2c_write_device(@text_address, <<0x40, c>>)
-    send_chars(rest)
-  end
-
-  defp send_text_cmd(cmd) do
-    Board.i2c_write_device(@text_address, <<0x80, cmd>>)
+  defp send_text_cmd(prefix, cmd) do
+    Board.i2c_write_device(prefix, @text_address, <<0x80, cmd>>)
   end
 end
