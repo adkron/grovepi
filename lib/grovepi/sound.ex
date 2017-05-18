@@ -13,7 +13,7 @@ defmodule GrovePi.Sound do
 
   Example usage:
   ```
-  iex> {:ok, sound}=GrovePi.Sound.start_link(3)
+  iex> {:ok, sound} = GrovePi.Sound.start_link(3)
   :ok
   iex> GrovePi.Sound.subscribe(3, :loud)
   :ok

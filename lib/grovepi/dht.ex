@@ -8,7 +8,7 @@ defmodule GrovePi.DHT do
 
   ```
   iex> pin = 3
-  iex> {:ok, pid}=GrovePi.DHT.start_link(pin)
+  iex> {:ok, pid} = GrovePi.DHT.start_link(pin)
   {:ok, #PID<0.199.0>}
   iex> GrovePi.DHT.read_temp_and_humidity(pin)
   {23.0, 40.0}
