@@ -1,6 +1,7 @@
 defmodule HomeWeatherDisplay do
   @moduledoc false
   use GenServer
+  require Logger
 
   defstruct [:dht]
 
@@ -10,31 +11,37 @@ defmodule HomeWeatherDisplay do
     GenServer.start_link(__MODULE__, pin)
   end
 
-  def init([dht_pin]) do
+  def init(dht_pin) do
     state = %HomeWeatherDisplay{dht: dht_pin}
+
+    flash_rgb()
+    RGBLCD.set_text("Ready!")
 
     DHT11.subscribe(dht_pin, :changed)
     {:ok, state}
   end
 
-  def handle_info({_pid, :changed, %{temp: temp, humidity: humidity}}, state) do
+  def handle_info({_pin, :changed, %{temp: temp, humidity: humidity}}, state) do
     text = format_text(temp, humidity)
 
-    # Flash RGB LCD screen before change
-    RGBLCD.set_rgb(0, 128, 64)
-    RGBLCD.set_rgb(0, 255, 0)
+    flash_rgb()
 
     # Update LCD with new data
     RGBLCD.set_text(text)
-
-    {:ok, state}
+    Logger.info text
+    {:noreply, state}
   end
 
   def handle_info(_message, state) do
-    {:ok, state}
+    {:noreply, state}
+  end
+
+  defp flash_rgb() do
+    RGBLCD.set_rgb(0, 128, 64)
+    RGBLCD.set_rgb(0, 255, 0)
   end
 
   defp format_text(temp, humidity) do
-    "Temp: #{Float.to_string(temp)}C  Humidity: #{Float.to_string(humidity)}%"
+    "T: #{Float.to_string(temp)}C H: #{Float.to_string(humidity)}%"
   end
 end
