@@ -42,7 +42,7 @@ defmodule GrovePi.Mixfile do
   end
 
   defp package do
-    [files: ["lib", "mix.exs", "README.md"],
+    [files: ["lib", "mix.exs", "README.md", "LICENSE", "CHANGELOG.md"],
      maintainers: ["Frank Hunleth", "Amos King"],
      licenses: ["Apache License"],
      links: %{"GitHub" => @github}]
