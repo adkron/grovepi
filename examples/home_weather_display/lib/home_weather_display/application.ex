@@ -11,7 +11,7 @@ defmodule HomeWeatherDisplay.Application do
 
     children = [
       # Start the GrovePi sensor we want
-      worker(GrovePi.DHT11, [@dht_pin, [poll_interval: @dht_poll_interval]]),
+      worker(GrovePi.DHT, [@dht_pin, [poll_interval: @dht_poll_interval]]),
 
       # Start the main app
       worker(HomeWeatherDisplay, [@dht_pin]),

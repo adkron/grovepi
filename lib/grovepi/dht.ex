@@ -1,54 +1,45 @@
 defmodule GrovePi.DHT do
   alias GrovePi.Board
 
+  use GrovePi.Poller, default_trigger: GrovePi.DHT.DefaultTrigger,
+  read_type: Digital.level
+
   @moduledoc """
-  Read temperature and humidity from the Grove DHT sensor.
+  Listen for events from a GrovePi DHT (Digital Humidity and Temparature)
+  sensor. This module is configured for the DHT11, the blue one, that comes
+  with the GrovePi+ Starter Kit. There is only one type of event by default;
+  `:changed`. When registering for an event the DHT will send a message in the
+  form of `{pin, :changed, %{temp: 11.3, humidity: 45.5}` with the temp and
+  humidty being floats. The `GrovePi.DHT` module works by polling
+  the pin that you have registered to a DHT sensor.
 
-  Example use:
-
+  Example usage:
   ```
-  iex> pin = 3
-  iex> {:ok, pid} = GrovePi.DHT.start_link(pin)
-  {:ok, #PID<0.199.0>}
-  iex> GrovePi.DHT.read_temp_and_humidity(pin)
-  {23.0, 40.0}
+  iex> {:ok, dht} = GrovePi.DHT.start_link(7)
+  :ok
+  iex> GrovePi.DHT.subscribe(7, :changed)
+  :ok
   ```
 
+  The `GrovePi.DHT.DefaultTrigger` is written so when the value of
+  the either the temp or humidity changes, the subscribed process will receive
+  a message in the form of `{pid, :changed, %{temp: 11.3, humidity: 45.5}`. The
+  message should be received using GenServer handle_info/2.
+
+  For example:
+  ```
+  def handle_info({_pid, :changed, %{temp: temp, humidity: humidity}}, state) do
+    # do something with temp and/or humidity
+    {:noreply, state}
+  end
+  ```
   """
+  @module_type 0
 
-  @type temp :: float
-  @type humidity :: float
-  @type module_type :: integer
-
-  alias GrovePi.Registry.Pin
-
-  defmodule State do
-    @moduledoc false
-    defstruct [:pin, :prefix]
-  end
-
-  @spec start_link(GrovePi.pin, atom) :: Supervisor.on_start
-  def start_link(pin, opts \\ []) do
-    prefix = Keyword.get(opts, :prefix, Default)
-    opts = Keyword.put(opts, :name, Pin.name(prefix, pin))
-    GenServer.start_link(__MODULE__, [pin, prefix], opts)
-  end
-
-  def init([pin, prefix]) do
-    {:ok, %State{pin: pin, prefix: prefix}}
-  end
-
-  @spec read_temp_and_humidity(GrovePi.pin, atom, module_type)
-  :: {temp, humidity}
-  def read_temp_and_humidity(pin, prefix \\ Default, module_type \\ 0) do
-    pin_process = Pin.name(prefix, pin)
-    GenServer.call(pin_process, {:read_temp_and_humidity, module_type})
-  end
-
-  def handle_call({:read_temp_and_humidity, module_type}, _from, state) do
-    :ok = Board.send_request(state.prefix, <<40, state.pin, module_type, 0>>)
-    <<_, temp::little-float-size(32), humidity::little-float-size(32)>> =
-      Board.get_response(state.prefix, 9)
-      {:reply, {temp, humidity}, state}
+  def read_value(prefix, pin) do
+    with :ok <- Board.send_request(prefix, <<40, pin, @module_type, 0>>),
+          <<_, temp::little-float-size(32), humidity::little-float-size(32)>>
+            <- Board.get_response(prefix, 9),
+    do: {temp, humidity}
   end
 end

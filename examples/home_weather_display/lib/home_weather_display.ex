@@ -5,7 +5,7 @@ defmodule HomeWeatherDisplay do
 
   defstruct [:dht]
 
-  alias GrovePi.{RGBLCD, DHT11}
+  alias GrovePi.{RGBLCD, DHT}
 
   def start_link(pin) do
     GenServer.start_link(__MODULE__, pin)
@@ -17,7 +17,7 @@ defmodule HomeWeatherDisplay do
     flash_rgb()
     RGBLCD.set_text("Ready!")
 
-    DHT11.subscribe(dht_pin, :changed)
+    DHT.subscribe(dht_pin, :changed)
     {:ok, state}
   end
 
