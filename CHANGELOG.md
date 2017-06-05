@@ -1,6 +1,9 @@
 # Changelog
 
-## v0.3.3-dev
+## v0.4.0
+
+* Replaced DHT with DHT11. Now there's only one DHT module and it uses
+  the poller.
 
 ## v0.3.2
 

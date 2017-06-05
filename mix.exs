@@ -2,7 +2,7 @@ defmodule GrovePi.Mixfile do
   use Mix.Project
 
   @name      "GrovePi"
-  @version   "0.3.3-dev"
+  @version   "0.4.0"
   @github    "https://github.com/fhunleth/grovepi"
   @homepage  @github
 
