@@ -1,4 +1,33 @@
 defmodule GrovePi.Poller do
+  @moduledoc """
+  A behaviour module for implementing polling on a pin.
+
+  The GrovePi.Poller behavior abstracts polling on a pin.  Developers are
+  responsible for implementing `c:read_value/2` and a module using the
+  `GrovePi.Trigger` behaviour.
+
+  ## Example
+
+  This example shows implementation of `GrovePi.Potentiometer`.  The module
+  should `use GrovePi.Poller`, specifiying the `:default_trigger` and
+  `:read_type`.  It should have a `c:read_value/2` callback which reads the
+  desired sensor.
+
+      defmodule GrovePi.Potentiometer do
+        alias GrovePi.Analog
+
+        use GrovePi.Poller, default_trigger: GrovePi.Potentiometer.DefaultTrigger,
+          read_type: Analog.adc_level
+
+        def read_value(prefix, pin) do
+          Analog.read(prefix, pin)
+        end
+      end
+
+  The requirements for creating the `:default_trigger` are described in
+  `GrovePi.Trigger`.
+  """
+
   @callback read_value(atom, GrovePi.pin) :: any
 
   defmacro __using__([default_trigger: default_trigger, read_type: read_type]) do
@@ -42,11 +71,16 @@ defmodule GrovePi.Poller do
       end
 
       @doc """
-      # Options
+      Starts a process linked to the current process.
+
+      This is often used to start the process as part of a supervision tree.
+
+      ## Options
 
       * `:poll_interval` - The time in ms between polling for state.i If set to 0
                            polling will be turned off. Default: `100`
-      * `:trigger` - This is used to pass in a trigger to use for triggering events. See specific poller for defaults
+      * `:trigger` - This is used to pass in a trigger to use for triggering
+                     events. See specific poller for defaults
       * `:trigger_opts` - This is used to pass options to a trigger `init\1`. The default is `[]`
       """
 
@@ -84,7 +118,7 @@ defmodule GrovePi.Poller do
       end
 
       @doc """
-        Stops polling immediately
+      Stops polling immediately
       """
       @spec stop_polling(GrovePi.pin, atom) :: :ok
       def stop_polling(pin, prefix \\ Default) do
@@ -92,19 +126,25 @@ defmodule GrovePi.Poller do
       end
 
       @doc """
-        Stops the current scheduled polling event and starts a new one with
-        the new interval.
+      Stops the current scheduled polling event and starts a new one with
+      the new interval.
       """
       @spec change_polling(GrovePi.pin, integer, atom) :: :ok
       def change_polling(pin, interval, prefix \\ Default) do
         GenServer.cast(Pin.name(prefix, pin), {:change_polling, interval})
       end
 
+      @doc """
+      Read the value from the specified pin.
+      """
       @spec read(GrovePi.pin, atom) :: unquote(read_type)
       def read(pin, prefix \\ Default) do
         GenServer.call(Pin.name(prefix, pin), :read)
       end
 
+      @doc """
+      Subscribes the current process to an event.
+      """
       @spec subscribe(GrovePi.pin, GrovePi.Trigger.event, atom)
       :: {:ok, pid} | {:error, {:already_registered, pid}}
       def subscribe(pin, event, prefix \\ Default) do

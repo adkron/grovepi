@@ -1,5 +1,6 @@
 defmodule GrovePi.RGBLCD do
   @moduledoc """
+  Conveniences for controlling a RGB LCD Display.
   """
 
   @rgb_address  0x62
@@ -11,6 +12,9 @@ defmodule GrovePi.RGBLCD do
   # NOTE: Review datasheet, since this does not seem like
   #       the most efficient way of updating the display.
 
+  @doc """
+  Sets the red, green, and blue values for a RGB LCD Display.
+  """
   def set_rgb(r, g, b) do
     Board.i2c_write_device(@rgb_address, <<0, 0>>)
     Board.i2c_write_device(@rgb_address, <<1, 0>>)
@@ -20,6 +24,9 @@ defmodule GrovePi.RGBLCD do
     Board.i2c_write_device(@rgb_address, <<2, b>>)
   end
 
+  @doc """
+  Updates the text on a RGB LCD Display.
+  """
   def set_text(text) do
     send_text_cmd(0x01) # clear display
     Process.sleep(50)

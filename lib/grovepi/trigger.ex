@@ -1,8 +1,38 @@
 defmodule GrovePi.Trigger do
   @moduledoc """
   The Trigger behaviour is used for implementing triggers for poller
-  behaviors such as `GrovePi.Sound` and `GrovePi.Button`. The triggers
-  must implement two callbacks, init and update.
+  behaviors such as `GrovePi.Sound` and `GrovePi.Button`.
+
+  The triggers must implement two callbacks, `c:init/1` and `c:update/2`.
+
+  ## Example
+
+  The following is the implementation of `GrovePi.Button.DefaultTrigger`. Processes
+  can subscribe to two events `:released` and `:pressed`.
+
+      defmodule GrovePi.Button.DefaultTrigger do
+        @behaviour GrovePi.Trigger
+
+        defmodule State do
+          @moduledoc false
+          defstruct value: 0
+        end
+
+        def init(_) do
+          {:ok, %State{}}
+        end
+
+        def update(value, %{value: value} = state) do
+          {:ok, state}
+        end
+
+        def update(new_value, state) do
+          {event(new_value), %{state | value: new_value}}
+        end
+
+        defp event(0), do: :released
+        defp event(1), do: :pressed
+      end
   """
 
   @type event :: atom

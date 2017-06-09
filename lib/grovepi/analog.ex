@@ -2,11 +2,12 @@ defmodule GrovePi.Analog do
   alias GrovePi.Board
 
   @moduledoc ~S"""
-  Perform analog I/O using the GrovePi. Analog reads return 10-bit values
-  (0-1023) from analog to digital converters on the GrovePi. These values
-  map to voltages between 0 and 5 volts. Analog writes generate a steady
-  square wave on supported pins (also called PWM). The connectors and pins
-  on the GrovePi and GrovePiZero boards differ in their support for analog
+  Perform analog I/O using the GrovePi.
+
+  Analog reads return 10-bit values (0-1023) from analog to digital converters on
+  the GrovePi. These values map to voltages between 0 and 5 volts. Analog writes
+  generate a steady square wave on supported pins (also called PWM). The connectors
+  and pins on the GrovePi and GrovePiZero boards differ in their support for analog
   reads and writes.
 
   When in doubt, consult the following diagram or the corresponding one for

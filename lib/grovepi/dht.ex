@@ -5,6 +5,8 @@ defmodule GrovePi.DHT do
   read_type: Digital.level
 
   @moduledoc """
+  Conveniences for reading from a DHT sensor.
+
   Listen for events from a GrovePi DHT (Digital Humidity and Temparature)
   sensor. This module is configured for the DHT11, the blue one, that comes
   with the GrovePi+ Starter Kit. There is only one type of event by default;

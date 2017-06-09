@@ -5,6 +5,8 @@ defmodule GrovePi.Button do
   read_type: Digital.level
 
   @moduledoc """
+  Conveniences for working with a button.
+
   Listen for events from a GrovePi button. There are two types of
   events by default; pressed and released. When registering for an event the
   button will then send a message of `{pin, :pressed, %{value: 1}` or

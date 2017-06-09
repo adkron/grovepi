@@ -5,6 +5,8 @@ defmodule GrovePi.Potentiometer do
   read_type: Analog.adc_level
 
   @moduledoc """
+  Conveniences for reading from a potentiometer or rotary angle sensor.
+
   Listen for events from a GrovePi potentiometer or rotary angle sensor. There
   is only one type of event by default; `:changed`. When registering for an
   event the potentiometer will send a message similar to
