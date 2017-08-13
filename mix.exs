@@ -2,8 +2,8 @@ defmodule GrovePi.Mixfile do
   use Mix.Project
 
   @name      "GrovePi"
-  @version   "0.4.0"
-  @github    "https://github.com/fhunleth/grovepi"
+  @version   "0.4.1"
+  @github    "https://github.com/adkron/grovepi"
   @homepage  @github
 
   def project do
@@ -43,7 +43,7 @@ defmodule GrovePi.Mixfile do
 
   defp package do
     [files: ["lib", "mix.exs", "README.md", "LICENSE", "CHANGELOG.md"],
-     maintainers: ["Frank Hunleth", "Amos King"],
+     maintainers: ["Amos King", "Frank Hunleth"],
      licenses: ["Apache License"],
      links: %{"GitHub" => @github}]
   end
