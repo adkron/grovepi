@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.1
+
+* Move ownership of repository to adkron.
+
 ## v0.4.0
 
 * Replaced DHT with DHT11. Now there's only one DHT module and it uses
