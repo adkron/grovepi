@@ -47,6 +47,7 @@ defmodule GrovePi.Analog do
          do: value
   end
 
+  @spec read(GrovePi.pin) :: adc_level | {:error, term}
   def read(pin) do
     read(Default, pin)
   end
@@ -57,11 +58,12 @@ defmodule GrovePi.Analog do
   can be used to dim an LED, for example, by turning the output on only
   a fraction of the time.
   """
-  @spec write(GrovePi.pin, pwm) :: :ok | {:error, term}
+  @spec write(atom, GrovePi.pin, pwm) :: :ok | {:error, term}
   def write(prefix, pin, value) do
     Board.send_request(prefix, <<4, pin, value, 0>>)
   end
 
+  @spec write(GrovePi.pin, pwm) :: :ok | {:error, term}
   def write(pin, value) do
     write(Default, pin, value)
   end
