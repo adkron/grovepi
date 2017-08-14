@@ -38,18 +38,18 @@ defmodule GrovePi.Digital do
     set_pin_mode(Default, pin, pin_mode)
   end
 
-  @spec read(atom, GrovePi.pin) :: level
+  @spec read(atom, GrovePi.pin) :: level | {:error, term}
   def read(prefix, pin) do
-    :ok = Board.send_request(prefix, <<1, pin, 0, 0>>)
-    <<value>> = Board.get_response(prefix, 1)
-    value
+    with :ok <- Board.send_request(prefix, <<1, pin, 0, 0>>),
+         <<value>> = Board.get_response(prefix, 1),
+      do: value
   end
 
   @doc """
   Read the value on a digital I/O pin. Before this is called, the pin must be
   configured as an `:input` with `set_pin_mode/2` or `set_pin_mode/3`.
   """
-  @spec read(GrovePi.pin) :: level
+  @spec read(GrovePi.pin) :: level | {:error, term}
   def read(pin) do
     read(Default, pin)
   end
