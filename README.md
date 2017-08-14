@@ -1,6 +1,6 @@
 # GrovePi
 
-[![Build Status](https://travis-ci.org/fhunleth/grovepi.svg?branch=master)](https://travis-ci.org/fhunleth/grovepi)
+[![Build Status](https://travis-ci.org/adkron/grovepi.svg?branch=master)](https://travis-ci.org/adkron/grovepi)
 [![Ebert](https://ebertapp.io/github/fhunleth/grovepi.svg)](https://ebertapp.io/github/fhunleth/grovepi)
 
 Use the [GrovePi+][dexter] and sensors in Elixir on a Raspberry Pi. If you have
