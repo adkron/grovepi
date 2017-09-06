@@ -12,7 +12,7 @@ defmodule HomeWeatherDisplay.Mixfile do
      version: "0.1.0",
      elixir: "~> 1.4.0",
      target: @target,
-     archives: [nerves_bootstrap: "~> 0.3.0"],
+     archives: [nerves_bootstrap: "~> 0.6.0"],
      deps_path: "deps/#{@target}",
      build_path: "_build/#{@target}",
      build_embedded: Mix.env == :prod,
