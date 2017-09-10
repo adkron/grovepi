@@ -11,14 +11,14 @@ defmodule GrovePi.Digital do
 
   iex> GrovePi.Digital.set_pin_mode(pin, :input)
   :ok
+  iex> GrovePi.Digital.read(pin, 0)
+  1
+  iex> GrovePi.Digital.set_pin_mode(pin, :output)
+  :ok
   iex> GrovePi.Digital.write(pin, 1)
   :ok
   iex> GrovePi.Digital.write(pin, 0)
   :ok
-  iex> GrovePi.Digital.set_pin_mode(pin, :output)
-  :ok
-  iex> GrovePi.Digital.read(pin, 0)
-  1
   ```
   """
 
