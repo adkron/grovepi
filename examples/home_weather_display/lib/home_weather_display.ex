@@ -14,7 +14,7 @@ defmodule HomeWeatherDisplay do
   def init(dht_pin) do
     state = %HomeWeatherDisplay{dht: dht_pin}
 
-    flash_rgb()
+    RGBLCD.start()
     RGBLCD.set_text("Ready!")
 
     DHT.subscribe(dht_pin, :changed)
@@ -22,13 +22,15 @@ defmodule HomeWeatherDisplay do
   end
 
   def handle_info({_pin, :changed, %{temp: temp, humidity: humidity}}, state) do
-    text = format_text(temp, humidity)
+    temp = format_temp(temp)
+    humidity = format_humidity(humidity)
 
     flash_rgb()
 
-    # Update LCD with new data
-    RGBLCD.set_text(text)
-    Logger.info text
+    RGBLCD.set_text(temp)
+    RGBLCD.set_cursor(1, 0)
+    RGBLCD.write_text(humidity)
+    Logger.info temp <> " " <> humidity
     {:noreply, state}
   end
 
@@ -37,11 +39,16 @@ defmodule HomeWeatherDisplay do
   end
 
   defp flash_rgb() do
-    RGBLCD.set_rgb(0, 128, 64)
-    RGBLCD.set_rgb(0, 255, 0)
+    RGBLCD.set_rgb(255, 0, 0)
+    Process.sleep(1000)
+    RGBLCD.set_color_white()
   end
 
-  defp format_text(temp, humidity) do
-    "T: #{Float.to_string(temp)}C H: #{Float.to_string(humidity)}%"
+  defp format_temp(temp) do
+    "Temp: #{Float.to_string(temp)} C"
+  end
+
+  defp format_humidity(humidity) do
+    "Humidity: #{Float.to_string(humidity)}%"
   end
 end
