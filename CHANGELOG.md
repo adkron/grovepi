@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.5.1
+
+* Big changes in the RGBLCD module. Make sure to checkout the
+  documentation.
+
 ## v0.4.1
 
 * Move ownership of repository to adkron.
