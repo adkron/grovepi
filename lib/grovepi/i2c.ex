@@ -28,6 +28,10 @@ defmodule GrovePi.I2C do
     GenServer.call(pid, {:get_last_write, opts})
   end
 
+  def get_all_writes(pid, opts \\ []) do
+    GenServer.call(pid, {:get_all_writes, opts})
+  end
+
   @spec write(pid, binary) :: :ok
   def write(pid, message) do
     GenServer.call(pid, {:write, message})
@@ -57,6 +61,17 @@ defmodule GrovePi.I2C do
   def handle_call({:get_last_write, []}, _from, state) do
     {{_, message}, new_state} = State.pop_last_write(state)
     {:reply, message, new_state}
+  end
+
+  def handle_call({:get_all_writes, [include_time: true]}, _from, state) do
+    {message_packs, new_state} = State.pop_all_writes(state)
+    {:reply, message_packs, new_state}
+  end
+
+  def handle_call({:get_all_writes, []}, _from, state) do
+    {message_packs, new_state} = State.pop_all_writes(state)
+    messages = State.remove_time_from_message_packs(message_packs)
+    {:reply, messages, new_state}
   end
 
   def handle_call({:read,  _len}, _from, state) do
