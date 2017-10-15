@@ -12,10 +12,10 @@ defmodule GrovePi.PivotPi.PCA9685Test do
 
     messages = GrovePi.I2C.get_all_writes(board)
     %{address: address} = List.first(messages)
-    message_buffers = Enum.map(messages, &(&1.buffer))
+    data = Enum.map(messages, &(&1.data))
 
     assert address == 0x40
-    assert message_buffers == [
+    assert data == [
       <<0xfa, 0, 0, 0, 16>>,
       <<0x00, 0x30>>,
       <<0x01, 0x14>>,

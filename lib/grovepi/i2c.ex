@@ -1,7 +1,9 @@
 defmodule GrovePi.I2C do
   @moduledoc false
+
   use GenServer
-  alias GrovePi.I2C.State
+
+  alias GrovePi.I2C.{State, Write}
 
   defmacro __using__(_) do
     quote do
@@ -24,12 +26,16 @@ defmodule GrovePi.I2C do
     GenServer.call(pid, {:add_responses, [message]})
   end
 
-  def get_last_write(pid, opts \\ []) do
-    GenServer.call(pid, {:get_last_write, opts})
+  def get_last_write(pid) do
+    GenServer.call(pid, {:get_last_write})
   end
 
-  def get_all_writes(pid, opts \\ []) do
-    GenServer.call(pid, {:get_all_writes, opts})
+  def get_last_write_data(pid) do
+    GenServer.call(pid, {:get_last_write_data})
+  end
+
+  def get_all_writes(pid) do
+    GenServer.call(pid, {:get_all_writes})
   end
 
   @spec write(pid, binary) :: :ok
@@ -50,28 +56,22 @@ defmodule GrovePi.I2C do
   end
 
   def handle_call({:write, message}, _from, state) do
-    {:reply, :ok, State.add_input(state, message)}
+    {:reply, :ok, State.add_input(state, %Write{data: message})}
   end
 
-  def handle_call({:get_last_write, [include_time: true]}, _from, state) do
-    {message_pack, new_state} = State.pop_last_write(state)
-    {:reply, message_pack, new_state}
+  def handle_call({:get_last_write}, _from, state) do
+    {write, new_state} = State.pop_last_write(state)
+    {:reply, write, new_state}
   end
 
-  def handle_call({:get_last_write, []}, _from, state) do
-    {{_, message}, new_state} = State.pop_last_write(state)
-    {:reply, message, new_state}
+  def handle_call({:get_last_write_data}, _from, state) do
+    {data, new_state} = State.pop_last_write_data(state)
+    {:reply, data, new_state}
   end
 
-  def handle_call({:get_all_writes, [include_time: true]}, _from, state) do
-    {message_packs, new_state} = State.pop_all_writes(state)
-    {:reply, message_packs, new_state}
-  end
-
-  def handle_call({:get_all_writes, []}, _from, state) do
-    {message_packs, new_state} = State.pop_all_writes(state)
-    messages = State.remove_time_from_message_packs(message_packs)
-    {:reply, messages, new_state}
+  def handle_call({:get_all_writes}, _from, state) do
+    {writes, new_state} = State.pop_all_writes(state)
+    {:reply, writes, new_state}
   end
 
   def handle_call({:read,  _len}, _from, state) do
@@ -87,7 +87,7 @@ defmodule GrovePi.I2C do
     {:reply, :ok, %State{}}
   end
 
-  def handle_call({:write_device, address, buffer}, _from, state) do
-    {:reply, :ok, State.add_input(state, %{address: address, buffer: buffer})}
+  def handle_call({:write_device, address, data}, _from, state) do
+    {:reply, :ok, State.add_input(state, %Write{address: address, data: data})}
   end
 end
