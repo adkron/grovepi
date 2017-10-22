@@ -24,4 +24,40 @@ defmodule GrovePi.PivotPi.PCA9685Test do
       <<0x00, 0x20>>
     ]
   end
+
+  test "sets channel pwm values", %{board: board} do
+    channel_1 = 1
+    on = 0x1000
+    off = 0
+
+    GrovePi.PivotPi.PCA9685.set_pwm(channel_1, on, off)
+
+    assert <<10, 0, 16, 0, 0>> == GrovePi.I2C.get_last_write_data(board)
+  end
+
+  test "sets channel pwm on", %{board: board} do
+    channel_1 = 1
+
+    GrovePi.PivotPi.PCA9685.set_pwm_on(channel_1)
+
+    assert <<10, 0, 16, 0, 0>> == GrovePi.I2C.get_last_write_data(board)
+  end
+
+  test "sets channel pwm off", %{board: board} do
+    channel_1 = 1
+
+    GrovePi.PivotPi.PCA9685.set_pwm_off(channel_1)
+
+    assert <<10, 0, 0, 0, 16>> == GrovePi.I2C.get_last_write_data(board)
+  end
+
+  test "sends command to board", %{board: board} do
+    command = <<1, 2, 3>>
+
+    GrovePi.PivotPi.PCA9685.send_cmd(command)
+    write = GrovePi.I2C.get_last_write(board)
+
+    assert 0x40 == write.address
+    assert <<1, 2, 3>> == write.data
+  end
 end
