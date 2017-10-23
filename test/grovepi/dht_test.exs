@@ -34,10 +34,10 @@ defmodule GrovePi.DHTTest do
 
     assert GrovePi.DHT.read(@pin, prefix) == {23.0, 44.5}
 
-    assert <<40, @pin, 0, 0>> == GrovePi.I2C.get_last_write(board)
+    assert <<40, @pin, 0, 0>> == GrovePi.I2C.get_last_write_data(board)
 
     assert GrovePi.DHT.read(@pin, prefix) == {13.5, 77.5}
 
-    assert <<40, @pin, 0, 0>> == GrovePi.I2C.get_last_write(board)
+    assert <<40, @pin, 0, 0>> == GrovePi.I2C.get_last_write_data(board)
   end
 end

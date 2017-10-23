@@ -34,10 +34,10 @@ defmodule GrovePi.ButtonTest do
 
     assert GrovePi.Button.read(@pin, prefix) == 1
 
-    assert <<1, @pin, 0, 0>> == GrovePi.I2C.get_last_write(board)
+    assert <<1, @pin, 0, 0>> == GrovePi.I2C.get_last_write_data(board)
 
     assert GrovePi.Button.read(@pin, prefix) == 0
 
-    assert <<1, @pin, 0, 0>> == GrovePi.I2C.get_last_write(board)
+    assert <<1, @pin, 0, 0>> == GrovePi.I2C.get_last_write_data(board)
   end
 end

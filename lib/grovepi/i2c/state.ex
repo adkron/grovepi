@@ -1,11 +1,13 @@
 defmodule GrovePi.I2C.State do
-  alias __MODULE__
-  defstruct responses: [], writes: []
   @moduledoc false
 
-  def add_input(%State{} = state, message) do
+  alias __MODULE__
+
+  defstruct responses: [], writes: []
+
+  def add_input(%State{} = state, write) do
     %{state |
-      writes: [add_time_to_messages(message) | state.writes]
+      writes: [add_time_to_write(write) | state.writes]
     }
   end
 
@@ -13,14 +15,29 @@ defmodule GrovePi.I2C.State do
     %{state | responses: state.responses ++ responses}
   end
 
+  def pop_all_writes(%State{writes: []} = state) do
+    {{:error, :no_more_messages}, state}
+  end
+
+  def pop_all_writes(%State{} = state) do
+    {all_writes, new_state} = get_all_writes(state)
+    {all_writes, new_state}
+  end
+
   def pop_last_write(%State{} = state) do
-    {message_pack, rest} = pop_or_error(state.writes)
+    {write, rest} = pop_or_error(state.writes)
     new_state = %{state | writes: rest}
-    {message_pack, new_state}
+    {write, new_state}
+  end
+
+  def pop_last_write_data(%State{} = state) do
+    {write, new_state} = pop_last_write(state)
+    data = get_data(write)
+    {data, new_state}
   end
 
   def pop_last_response(%State{responses: []} = state) do
-    {<<0>>, state}
+    {{:error, :no_more_messages}, state}
   end
 
   def pop_last_response(%State{responses: responses} = state) do
@@ -28,10 +45,22 @@ defmodule GrovePi.I2C.State do
     {message, %{state | responses: rest_responses}}
   end
 
+  defp get_all_writes(state) do
+    Map.get_and_update(state, :writes, &(rev_and_update_writes(&1)))
+  end
+
+  defp rev_and_update_writes(messages) do
+    ordered_messages = Enum.reverse(messages)
+    {ordered_messages, []}
+  end
+
   defp pop_or_error([]), do: {{:error, :no_more_messages}, []}
   defp pop_or_error([head | tail]), do: {head, tail}
 
-  defp add_time_to_messages(message) do
-    {System.monotonic_time(:millisecond), message}
+  defp add_time_to_write(write) do
+    %{write | time: System.monotonic_time(:millisecond)}
   end
+
+  defp get_data({:error, error}), do: {:error, error}
+  defp get_data(%{data: data}), do: data
 end
