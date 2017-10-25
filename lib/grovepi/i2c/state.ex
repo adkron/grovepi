@@ -20,8 +20,7 @@ defmodule GrovePi.I2C.State do
   end
 
   def pop_all_writes(%State{} = state) do
-    {all_writes, new_state} = get_all_writes(state)
-    {all_writes, new_state}
+    Map.get_and_update(state, :writes, &(rev_and_update_writes(&1)))
   end
 
   def pop_last_write(%State{} = state) do
@@ -43,10 +42,6 @@ defmodule GrovePi.I2C.State do
   def pop_last_response(%State{responses: responses} = state) do
     [message | rest_responses] = responses
     {message, %{state | responses: rest_responses}}
-  end
-
-  defp get_all_writes(state) do
-    Map.get_and_update(state, :writes, &(rev_and_update_writes(&1)))
   end
 
   defp rev_and_update_writes(messages) do
