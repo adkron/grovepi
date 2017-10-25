@@ -8,21 +8,21 @@ defmodule GrovePi.PivotPiTest do
   end
 
   test "sets angle for a channel", %{board: board} do
-    channel = 10
+    channel_1 = 1
     angle = 90
 
-    GrovePi.PivotPi.angle(channel, angle)
+    GrovePi.PivotPi.angle(channel_1, angle)
 
-    assert <<42, 0, 0, 136, 14>> == GrovePi.I2C.get_last_write_data(board)
+    assert <<6, 0, 0, 136, 14>> == GrovePi.I2C.get_last_write_data(board)
   end
 
   test "sets led value for a channel", %{board: board} do
-    channel = 10
+    channel_1 = 1
     led_percent = 50
 
-    GrovePi.PivotPi.led(channel, led_percent)
+    GrovePi.PivotPi.led(channel_1, led_percent)
 
-    assert <<74, 0, 0, 0, 8>> == GrovePi.I2C.get_last_write_data(board)
+    assert <<38, 0, 0, 0, 8>> == GrovePi.I2C.get_last_write_data(board)
   end
 
   test "sends initialization commands", %{board: board} do

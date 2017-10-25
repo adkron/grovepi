@@ -13,7 +13,7 @@ by adding `grovepi` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:grovepi, "~> 0.4.0"}]
+  [{:grovepi, "~> 0.5.1"}]
 end
 ```
 

@@ -25,6 +25,10 @@ defmodule GrovePi.PivotPi do
   ```
   """
 
+  @type channel :: 1..8
+  @type angle :: 0..180
+  @type percent :: 0..100
+
   alias GrovePi.PivotPi.PCA9685
 
   @max_12_bit_value 4095
@@ -32,6 +36,7 @@ defmodule GrovePi.PivotPi do
   @doc """
   Move the Servo motor to a new position.  Accepts angle from 0-180.
   """
+  @spec angle(channel, angle) :: :ok | {:error, term}
   def angle(channel, angle) do
     pwm_to_send = @max_12_bit_value - translate_to_servo_range(angle)
     device_channel = channel - 1
@@ -46,6 +51,7 @@ defmodule GrovePi.PivotPi do
   @doc """
   Control the PivotPi LEDs.  Channel # should match Servo #.  Accepts % from 0-100.
   """
+  @spec led(channel, percent) :: :ok | {:error, term}
   def led(channel, percent) do
     pwm_to_send = translate_to_12_bit(percent)
     PCA9685.set_pwm(convert_to_led(channel), 0, pwm_to_send)
@@ -62,6 +68,7 @@ defmodule GrovePi.PivotPi do
   @doc """
   Initialize the PivotPi board.
   """
+  @spec start() :: :ok | {:error, term}
   def start() do
     PCA9685.start()
   end
