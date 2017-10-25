@@ -2,11 +2,18 @@ defmodule GrovePi.PivotPi.PCA9685 do
   alias GrovePi.Board
   use Bitwise
 
-  @moduledoc false
+  @moduledoc """
+  This module provides lower level functions to interact with the
+  [PivotPi](https://www.dexterindustries.com/pivotpi-tutorials-documentation/)
+  through the [GrovePi](https://www.dexterindustries.com/grovepi/).  Most users
+  should be able to obtain all needed functionality with `GrovePi.PivotPi`.
+  """
 
   # References
   # https://github.com/DexterInd/PivotPi/tree/master/Software/Python
   # https://www.nxp.com/docs/en/data-sheet/PCA9685.pdf
+
+  @type channel :: 0..15
 
   # registers/etc:
   @pca9685_address     0x40
@@ -40,6 +47,7 @@ defmodule GrovePi.PivotPi.PCA9685 do
 
   @default_freq        60
 
+  @doc false
   def start() do
     set_pwm_off(:all)
     initialize()
@@ -68,6 +76,7 @@ defmodule GrovePi.PivotPi.PCA9685 do
   Update the PWM on and off times on the specified channel
   or `:all` to write to update all channels.
   """
+  @spec set_pwm(channel | :all, integer, integer) :: :ok | {:error, term}
   def set_pwm(channel, on, off) do
     send_cmd(<<channel_to_register(channel),
                on::little-size(16),
@@ -77,6 +86,7 @@ defmodule GrovePi.PivotPi.PCA9685 do
   @doc """
   Turn the specified channel or `:all` ON.
   """
+  @spec set_pwm_on(channel | :all) :: :ok | {:error, term}
   def set_pwm_on(channel) do
     set_pwm(channel, 0x1000, 0)
   end
@@ -84,6 +94,7 @@ defmodule GrovePi.PivotPi.PCA9685 do
   @doc """
   Turn the specified channel or `:all` OFF.
   """
+  @spec set_pwm_off(channel | :all) :: :ok | {:error, term}
   def set_pwm_off(channel) do
     set_pwm(channel, 0, 0x1000)
   end
@@ -93,6 +104,7 @@ defmodule GrovePi.PivotPi.PCA9685 do
 
   defp frequency_to_prescale(hz), do: round(((25000000.0 / 4096.0) / hz) - 1.0)
 
+  @spec send_cmd(binary) :: :ok | {:error, term}
   def send_cmd(command) do
     Board.i2c_write_device(@pca9685_address, command)
   end
