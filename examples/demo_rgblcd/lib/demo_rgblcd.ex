@@ -12,7 +12,7 @@ defmodule DemoRGBLCD do
   Shows autoscroll function
   """
   def autoscroll() do
-    {:ok, config} = RGBLCD.start()
+    {:ok, config} = RGBLCD.initialize()
     print_autoscroll(config)
   end
 
@@ -37,7 +37,7 @@ defmodule DemoRGBLCD do
   Toggles cursor blinking on and off every 3000ms
   """
   def blink() do
-    {:ok, config} = RGBLCD.start
+    {:ok, config} = RGBLCD.initialize()
     RGBLCD.set_text("hello world!")
     toggle_blink(config)
   end
@@ -54,7 +54,7 @@ defmodule DemoRGBLCD do
   Toggles the cursor on and off every 1500ms
   """
   def cursor() do
-    {:ok, config} = RGBLCD.start
+    {:ok, config} = RGBLCD.initialize()
     RGBLCD.set_text("hello world!")
     toggle_cursor(config)
   end
@@ -71,7 +71,7 @@ defmodule DemoRGBLCD do
   Demonstrates setting the RGB color
   """
   def colors() do
-    {:ok, _config} = RGBLCD.start()
+    {:ok, _config} = RGBLCD.initialize()
     toggle_colors()
   end
 
@@ -91,7 +91,7 @@ defmodule DemoRGBLCD do
   Toggles the display on and off every 1500ms
   """
   def display() do
-    {:ok, config} = RGBLCD.start
+    {:ok, config} = RGBLCD.initialize()
     RGBLCD.set_text("hello world!")
     toggle_display(config)
   end
@@ -123,7 +123,7 @@ defmodule DemoRGBLCD do
   Demonstrates text direction both ways
   """
   def text_direction() do
-    {:ok, config} = RGBLCD.start()
+    {:ok, config} = RGBLCD.initialize()
     do_text_direction(config)
   end
 
@@ -141,7 +141,7 @@ defmodule DemoRGBLCD do
   Demonstrates moving the cursor to the second line
   """
   def set_cursor() do
-    {:ok, config} = RGBLCD.start()
+    {:ok, config} = RGBLCD.initialize()
     {:ok, _new_config} = RGBLCD.cursor_on(config)
     do_set_cursor()
   end

@@ -69,8 +69,8 @@ defmodule GrovePi.PivotPi do
   @doc """
   Initialize the PivotPi board.
   """
-  @spec start() :: :ok | {:error, term}
-  def start() do
-    PCA9685.start()
+  @spec initialize() :: :ok | {:error, term}
+  def initialize() do
+    PCA9685.initialize()
   end
 end
