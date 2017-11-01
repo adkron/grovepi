@@ -111,7 +111,7 @@ defmodule GrovePi.RGBLCD do
   Initializes the LCD Display.  Returns tuple with :ok, and
   %GrovePi.RGBLCD.Config{} with initial configuration.
   """
-  def start() do
+  def initialize() do
     clear_display()
 
     config = get_default_config()

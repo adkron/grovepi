@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.6.0
+
+* Add PivotPi module to control servos
+* Add Relay module to control relay switch
+* Rename `start` functions to `initalize` in RGBLCD and PivotPi
+
 ## v0.5.1
 
 * Big changes in the RGBLCD module. Make sure to checkout the

@@ -48,13 +48,13 @@ defmodule GrovePi.PivotPi.PCA9685 do
   @default_freq        60
 
   @doc false
-  def start() do
+  def initialize() do
     set_pwm_off(:all)
-    initialize()
+    set_modes()
     set_pwm_freq(@default_freq)
   end
 
-  defp initialize() do
+  defp set_modes() do
     # Initialize the mode registers, but don't wake
     # the PCA9685 up yet.
     send_cmd(<<@mode1, @mode1_default ||| @mode1_sleep>>)

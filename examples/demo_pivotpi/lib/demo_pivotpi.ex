@@ -1,6 +1,6 @@
 defmodule DemoPivotPi do
   @moduledoc """
-  Sample functions to demonstrate and test GrovePi.RGBLCD module
+  Sample functions to demonstrate and test the GrovePi.PivotPi module
   """
 
   alias GrovePi.PivotPi
@@ -10,7 +10,7 @@ defmodule DemoPivotPi do
   channels 1-8.  Not required to have a servo in every channel.
   """
   def cycle_servos() do
-    PivotPi.start()
+    PivotPi.initialize()
     do_cycle_servos()
   end
 

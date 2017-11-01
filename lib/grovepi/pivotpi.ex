@@ -5,22 +5,23 @@ defmodule GrovePi.PivotPi do
   through the [GrovePi](https://www.dexterindustries.com/grovepi/).
 
   Plug your PivotPi into the GrovePi I2C-1 port.  Plug your servo motor into
-  channel 1. You must initialize the PivotPi board using `PivotPi.start()`.
+  channel 1. You must initialize the PivotPi board using
+  `GrovePi.PivotPi.initialize/0`.
 
   ```elixir
-  iex> PivotPi.start()
+  iex> GrovePi.PivotPi.start()
   :ok
-  iex> PivotPi.angle(1, 180)
+  iex> GrovePi.PivotPi.angle(1, 180)
   :ok
-  iex> PivotPi.angle(1, 90)
+  iex> GrovePi.PivotPi.angle(1, 90)
   :ok
-  iex> PivotPi.angle(1, 0)
+  iex> GrovePi.PivotPi.angle(1, 0)
   :ok
-  iex> PivotPi.led(1, 100)
+  iex> GrovePi.PivotPi.led(1, 100)
   :ok
-  iex> PivotPi.led(1, 50)
+  iex> GrovePi.PivotPi.led(1, 50)
   :ok
-  iex> PivotPi.led(1, 0)
+  iex> GrovePi.PivotPi.led(1, 0)
   :ok
   ```
   """
@@ -68,8 +69,8 @@ defmodule GrovePi.PivotPi do
   @doc """
   Initialize the PivotPi board.
   """
-  @spec start() :: :ok | {:error, term}
-  def start() do
-    PCA9685.start()
+  @spec initialize() :: :ok | {:error, term}
+  def initialize() do
+    PCA9685.initialize()
   end
 end

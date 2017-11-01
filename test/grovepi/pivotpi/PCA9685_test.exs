@@ -8,7 +8,7 @@ defmodule GrovePi.PivotPi.PCA9685Test do
   end
 
   test "sends initialization commands", %{board: board} do
-    GrovePi.PivotPi.PCA9685.start()
+    GrovePi.PivotPi.PCA9685.initialize()
 
     messages = GrovePi.I2C.get_all_writes(board)
     %{address: address} = List.first(messages)

@@ -14,7 +14,7 @@ defmodule HomeWeatherDisplay do
   def init(dht_pin) do
     state = %HomeWeatherDisplay{dht: dht_pin}
 
-    RGBLCD.start()
+    RGBLCD.initialize()
     RGBLCD.set_text("Ready!")
 
     DHT.subscribe(dht_pin, :changed)

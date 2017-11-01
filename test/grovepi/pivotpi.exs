@@ -26,7 +26,7 @@ defmodule GrovePi.PivotPiTest do
   end
 
   test "sends initialization commands", %{board: board} do
-    GrovePi.PivotPi.start()
+    GrovePi.PivotPi.initialize()
 
     data =
       board
