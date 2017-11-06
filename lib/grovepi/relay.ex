@@ -1,6 +1,7 @@
 defmodule GrovePi.Relay do
   @moduledoc """
   Conveniences for controlling a [GrovePi Relay](http://wiki.seeed.cc/Grove-Relay/).
+
   The relay should be connected to a Digital port (e.g. D3). The relay can
   be connected to something with a larger load, i.e appliance or desk lamp,
   which can then be controlled by the
