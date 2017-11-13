@@ -38,6 +38,10 @@ defmodule GrovePi.I2C do
     GenServer.call(pid, {:get_all_writes})
   end
 
+  def get_all_data(pid) do
+    GenServer.call(pid, {:get_all_data})
+  end
+
   @spec write(pid, binary) :: :ok
   def write(pid, message) do
     GenServer.call(pid, {:write, message})
@@ -72,6 +76,11 @@ defmodule GrovePi.I2C do
   def handle_call({:get_all_writes}, _from, state) do
     {writes, new_state} = State.pop_all_writes(state)
     {:reply, writes, new_state}
+  end
+
+  def handle_call({:get_all_data}, _from, state) do
+    {data, new_state} = State.pop_all_data(state)
+    {:reply, data, new_state}
   end
 
   def handle_call({:read,  _len}, _from, state) do

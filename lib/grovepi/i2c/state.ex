@@ -23,6 +23,16 @@ defmodule GrovePi.I2C.State do
     Map.get_and_update(state, :writes, &(rev_and_update_writes(&1)))
   end
 
+  def pop_all_data(%State{writes: []} = state) do
+    {{:error, :no_more_messages}, state}
+  end
+
+  def pop_all_data(%State{} = state) do
+    {writes, new_state} = pop_all_writes(state)
+    data = get_all_data(writes)
+    {data, new_state}
+  end
+
   def pop_last_write(%State{} = state) do
     {write, rest} = pop_or_error(state.writes)
     new_state = %{state | writes: rest}
@@ -54,6 +64,10 @@ defmodule GrovePi.I2C.State do
 
   defp add_time_to_write(write) do
     %{write | time: System.monotonic_time(:millisecond)}
+  end
+
+  defp get_all_data(writes) do
+    Enum.map(writes, &(&1.data))
   end
 
   defp get_data({:error, error}), do: {:error, error}
