@@ -9,7 +9,7 @@ defmodule GrovePi.Mixfile do
   def project do
     [app: :grovepi,
      version: @version,
-     elixir: "~> 1.4",
+     elixir: "~> 1.5",
      name: @name,
      description: description(),
      package: package(),

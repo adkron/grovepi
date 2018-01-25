@@ -2,6 +2,18 @@ defmodule GrovePi.RGBLCD do
   @moduledoc """
   Conveniences for controlling a RGB LCD Display.  The display should be connected
   to the I2C-1 port.
+
+  Example usage:
+  ```
+  iex> {:ok, config} = GrovePi.RGBLCD.initialize()
+  {:ok, %GrovePi.RGBLCD.Config{display_control: 12, entry_mode: 6, function: 56}}
+  iex> {:ok, new_config} = GrovePi.RGBLCD.cursor_on(config)
+  {:ok, %GrovePi.RGBLCD.Config{display_control: 14, entry_mode: 6, function: 56}}
+  iex> GrovePi.RGBLCD.set_rgb(0, 255, 0)
+  :ok
+  iex> GrovePi.RGBLCD.set_text("hello world!")
+  :ok
+  ```
   """
 
   # References
@@ -105,34 +117,6 @@ defmodule GrovePi.RGBLCD do
     send_lcd_cmd(new_entry_mode)
 
     {:ok, RGBLCD.Config.update_entry_mode(config, new_entry_mode)}
-  end
-
-  @doc """
-  Initializes the LCD Display.  Returns tuple with :ok, and
-  %GrovePi.RGBLCD.Config{} with initial configuration.
-  """
-  def start() do
-    clear_display()
-
-    config = get_default_config()
-
-    send_lcd_cmd(config.function)
-    send_lcd_cmd(config.display_control)
-    send_lcd_cmd(config.entry_mode)
-
-    #backlit init
-    send_rgb(@reg_mode1, 0)
-
-    # set LEDs controllable by both PWM and GRPPWM registers
-    send_rgb(@reg_output, 0xff)
-
-    # set reg_mode2 values
-    # 0010 0000 -> 0x20 (DMBLNK to 1, ie blinky mode)
-    send_rgb(@reg_mode2, 0x20)
-
-    set_color_white()
-
-    {:ok, config}
   end
 
   @doc """
@@ -307,6 +291,34 @@ defmodule GrovePi.RGBLCD do
   end
 
   @doc """
+  Initializes the LCD Display.  Returns tuple with :ok, and
+  %GrovePi.RGBLCD.Config{} with initial configuration.
+  """
+  def initialize() do
+    clear_display()
+
+    config = get_default_config()
+
+    send_lcd_cmd(config.function)
+    send_lcd_cmd(config.display_control)
+    send_lcd_cmd(config.entry_mode)
+
+    #backlit init
+    send_rgb(@reg_mode1, 0)
+
+    # set LEDs controllable by both PWM and GRPPWM registers
+    send_rgb(@reg_output, 0xff)
+
+    # set reg_mode2 values
+    # 0010 0000 -> 0x20 (DMBLNK to 1, ie blinky mode)
+    send_rgb(@reg_mode2, 0x20)
+
+    set_color_white()
+
+    {:ok, config}
+  end
+
+  @doc """
   Scroll display left. Accepts spaces (integer) as an argument, defaults to 1.
   """
   def scroll_left(spaces \\ 1) do
@@ -430,15 +442,18 @@ defmodule GrovePi.RGBLCD do
     send_chars(rest)
   end
 
-  defp send_lcd_cmd(cmd) do
+  @doc false
+  def send_lcd_cmd(cmd) do
     Board.i2c_write_device(@lcd_address, <<0x80, cmd>>)
   end
 
-  defp send_lcd_write(text) do
+  @doc false
+  def send_lcd_write(text) do
     Board.i2c_write_device(@lcd_address, <<0x40, text>>)
   end
 
-  defp send_rgb(address, value) do
+  @doc false
+  def send_rgb(address, value) do
     Board.i2c_write_device(@rgb_address, <<address, value>>)
   end
 

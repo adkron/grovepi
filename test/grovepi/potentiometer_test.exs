@@ -34,10 +34,10 @@ defmodule GrovePi.PotentiometerTest do
 
     assert GrovePi.Potentiometer.read(@pin, prefix) == <<1>>
 
-    assert <<3, @pin, 0, 0>> == GrovePi.I2C.get_last_write(board)
+    assert <<3, @pin, 0, 0>> == GrovePi.I2C.get_last_write_data(board)
 
     assert GrovePi.Potentiometer.read(@pin, prefix) == <<120>>
 
-    assert <<3, @pin, 0, 0>> == GrovePi.I2C.get_last_write(board)
+    assert <<3, @pin, 0, 0>> == GrovePi.I2C.get_last_write_data(board)
   end
 end
