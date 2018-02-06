@@ -1,3 +1,18 @@
+defmodule GrovePi.Board.Behaviour do
+  @type device ::
+  %{
+    :address => GrovePi.I2C.address,
+    optional(any) => any,
+  } |
+  %{
+    :pin => GrovePi.pin,
+    optional(any) => any,
+  }
+
+  @type bytes_count :: integer
+
+  @callback read(device, bytes_count) :: binary
+end
 defmodule GrovePi.Board do
   @moduledoc """
   Low-level interface for sending raw requests and receiving responses from a
@@ -12,6 +27,8 @@ defmodule GrovePi.Board do
   ```
 
   """
+
+  @behaviour GrovePi.Board.Behaviour
 
   use GrovePi.I2C
   @i2c_retry_count 2
@@ -63,6 +80,13 @@ defmodule GrovePi.Board do
   @spec get_response(integer) :: binary | {:error, term}
   def get_response(len) do
     get_response(Default, len)
+  end
+
+  @doc """
+  Read the number of bytes from the given address
+  """
+  def read(%{address: address}, bytes_count) do
+    @i2c.read_device(i2c_name(Default), address, bytes_count)
   end
 
   @doc """
