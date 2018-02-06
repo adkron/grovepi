@@ -39,7 +39,7 @@ defmodule GrovePi.Mixfile do
      {:elixir_ale,  "~> 1.0"},
      {:ex_doc,      ">= 0.0.0", only: :dev},
      {:mix_test_watch, "~> 0.3", only: :dev, runtime: false},
-     {:credo, "~> 0.7", only: [:dev, :test]},
+     {:credo, ">= 0.7.0", only: [:dev, :test]},
    ]
   end
 

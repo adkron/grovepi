@@ -1,6 +1,6 @@
 %{
   "bunt": {:hex, :bunt, "0.2.0", "951c6e801e8b1d2cbe58ebbd3e616a869061ddadcc4863d0a2182541acae9a38", [:mix], []},
-  "credo": {:hex, :credo, "0.8.0", "187ce36098afef67baa503d0bb3ec047953c88e4c662591371d15ae9ce150119", [:mix], [{:bunt, "~> 0.2.0", [hex: :bunt, optional: false]}]},
+  "credo": {:hex, :credo, "0.8.10", "261862bb7363247762e1063713bb85df2bbd84af8d8610d1272cd9c1943bba63", [:mix], [{:bunt, "~> 0.2.0", [hex: :bunt, repo: "hexpm", optional: false]}], "hexpm"},
   "dialyxir": {:hex, :dialyxir, "0.5.0", "5bc543f9c28ecd51b99cc1a685a3c2a1a93216990347f259406a910cf048d1d7", [:mix], []},
   "earmark": {:hex, :earmark, "1.2.2", "f718159d6b65068e8daeef709ccddae5f7fdc770707d82e7d126f584cd925b74", [:mix], []},
   "elixir_ale": {:hex, :elixir_ale, "1.0.0", "e1e4b01cfdce54bf93cf09971bb75b76422a818fe97c9a1622a72d8ee32f61a8", [:make, :mix], [{:elixir_make, "~> 0.4", [hex: :elixir_make, optional: false]}]},
