@@ -1,3 +1,19 @@
+defprotocol GrovePi.Parsable do
+  @typedoc "anything that implements GrovePi.Parsable"
+  @type t :: any
+
+  @doc "parse binary response for the specifice device"
+  def parse(device, binary)
+end
+
+defprotocol GrovePi.Writable do
+  @typedoc "anything that implements GrovePi.Writable"
+  @type t :: any
+
+  @doc "generate wire format to be sent down i2c"
+  def to_binary(t)
+end
+
 defmodule GrovePi.Board.Behaviour do
   @type device ::
   %{
@@ -9,10 +25,12 @@ defmodule GrovePi.Board.Behaviour do
     optional(any) => any,
   }
 
-  @type bytes_count :: integer
+  @type bytes_count :: pos_integer
 
   @callback read(device, bytes_count) :: binary
+  @callback write(device, GrovePi.Writeable.t) :: :ok | {:error, any}
 end
+
 defmodule GrovePi.Board do
   @moduledoc """
   Low-level interface for sending raw requests and receiving responses from a
@@ -29,6 +47,7 @@ defmodule GrovePi.Board do
   """
 
   @behaviour GrovePi.Board.Behaviour
+  alias GrovePi.{Parsable, Writable}
 
   use GrovePi.I2C
   @i2c_retry_count 2
@@ -83,10 +102,22 @@ defmodule GrovePi.Board do
   end
 
   @doc """
-  Read the number of bytes from the given address
+  Read the number of bytes from the given device
   """
-  def read(%{address: address}, bytes_count) do
-    @i2c.read_device(i2c_name(Default), address, bytes_count)
+  @impl true
+  def read(%{address: address} = device, bytes_count) do
+    output = @i2c.read_device(i2c_name(Default), address, bytes_count)
+
+    device
+    |> Parsable.parse(output)
+  end
+
+  @doc """
+  Write a parasable the the given device
+  """
+  @impl true
+  def write(%{address: address}, parsable) do
+    @i2c.write_device(i2c_name(Default), address, Writable.to_binary(parsable))
   end
 
   @doc """

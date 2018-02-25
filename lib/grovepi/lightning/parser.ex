@@ -1,5 +1,6 @@
 defmodule GrovePi.Lightning.Parser do
   defstruct [:gain, :distance, :interrupt]
+
   def parse(<<next::binary-size(1), rest::binary>>) do
     reading = %__MODULE__{
       gain: :indoor

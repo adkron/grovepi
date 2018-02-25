@@ -56,7 +56,11 @@ defmodule GrovePi.I2C do
   end
 
   def write_device(pid, address, buffer) do
-    GenServer.call(pid, {:write_device, address, buffer})
+    GenServer.cast(pid, {:write_device, address, buffer})
+  end
+
+  def read_device(_pid, _address, _buffer) do
+    :ok
   end
 
   def handle_call({:write, message}, _from, state) do
@@ -96,7 +100,7 @@ defmodule GrovePi.I2C do
     {:reply, :ok, %State{}}
   end
 
-  def handle_call({:write_device, address, data}, _from, state) do
-    {:reply, :ok, State.add_input(state, %Write{address: address, data: data})}
+  def handle_cast({:write_device, address, data}, state) do
+    {:noreply, State.add_input(state, %Write{address: address, data: data})}
   end
 end
