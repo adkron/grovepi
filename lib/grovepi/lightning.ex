@@ -7,7 +7,11 @@ defmodule GrovePi.Lightning do
   end
 
   def read do
-    GenServer.cast(GrovePi.Lightning.Server, :read)
+    GenServer.call(GrovePi.Lightning.Server, :read_cached)
+  end
+
+  def read! do
+    GenServer.call(GrovePi.Lightning.Server, :read)
   end
 
   def gain do
@@ -16,6 +20,11 @@ defmodule GrovePi.Lightning do
 
   def gain(setting) do
     GenServer.cast(GrovePi.Lightning.Server, {:set, :gain, setting})
+  end
+
+  def last_strike do
+    value = GenServer.call(GrovePi.Lightning.Server, :read_cached)
+    {value.interrupt, value.distance}
   end
 
   def notify(%{interrupt: event, distance: distance}) do

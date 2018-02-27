@@ -33,9 +33,8 @@ defmodule GrovePi.Lightning.Parser.Test do
     )
   end
 
-  property "parses every type" do
-    check all {gain_result, gain_value} <- gain(),
-      power_down <- constant(0),
+  def input(gain, interrupt, distance) do
+    gen all power_down <- constant(0),
       noise_floor_level <- integer(0b000..0b111),
       watch_dog_threshold <- constant(0b0001),
       clear_statistics <- constant(1),
@@ -43,44 +42,50 @@ defmodule GrovePi.Lightning.Parser.Test do
       spike_rejection <- integer(0b0000..0b1111),
       lco_fdiv <- constant(0b00),
       mask_disturber <- constant(0b0),
-      {interrupt_result, interrupt_value} <- interrupt(),
       energy_lsb <- integer(0b00000000..0b11111111),
       energy_msb <- integer(0b00000000..0b11111111),
-      energy_mmsb <- integer(0b00000..0b11111),
+      energy_mmsb <- integer(0b00000..0b11111) do
+        <<
+        0::1*2,
+          gain::1*5,
+          power_down::1*1,
+          >> <>
+            <<
+        0::1*1,
+          noise_floor_level::1*3,
+          watch_dog_threshold::1*4,
+          >> <>
+            <<
+        1::1*1,
+          clear_statistics::1*1,
+          minimum_number_of_lightning::1*2,
+          spike_rejection::1*4,
+          >> <>
+            <<
+        lco_fdiv::1*2,
+          mask_disturber::1*1,
+          0::1*1,
+          interrupt::1*4,
+          >> <>
+            <<energy_lsb>> <>
+              <<energy_msb>> <>
+                <<
+        0::1*3,
+          energy_mmsb::1*5,
+          >> <>
+            <<
+        0::1*2,
+        distance::1*6,
+        >>
+      end
+  end
+
+  property "parses every type" do
+    check all {gain_result, gain_value} <- gain(),
+      {interrupt_result, interrupt_value} <- interrupt(),
       known_distance <- integer(0b000001..0b111110),
       {distance_result, distance_value} <- distance(known_distance),
-      input = <<
-    0::1*2,
-      gain_value::1*5,
-      power_down::1*1,
-      >> <>
-        <<
-    0::1*1,
-      noise_floor_level::1*3,
-      watch_dog_threshold::1*4,
-      >> <>
-        <<
-    1::1*1,
-      clear_statistics::1*1,
-      minimum_number_of_lightning::1*2,
-      spike_rejection::1*4,
-      >> <>
-        <<
-      lco_fdiv::1*2,
-      mask_disturber::1*1,
-      0::1*1,
-      interrupt_value::1*4,
-      >> <>
-        <<energy_lsb>> <>
-          <<energy_msb>> <>
-            <<
-      0::1*3,
-      energy_mmsb::1*5,
-      >> <>
-        <<
-      0::1*2,
-      distance_value::1*6,
-      >>
+      input <- input(gain_value, interrupt_value, distance_value)
       do
 
         output = Subject.parse(input)

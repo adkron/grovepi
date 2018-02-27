@@ -31,6 +31,11 @@ defmodule GrovePi.Lightning.Server do
 
   def handle_call(:read_cached, _from, device), do: {:reply, device, device}
 
+  def handle_call(:read, _from, device) do
+    new_state = read(device)
+    {:reply, new_state, new_state}
+  end
+
   def handle_info(:read, device) do
     {:noreply, read(device)}
   end

@@ -10,12 +10,12 @@ defmodule GrovePi.Lightning.Test do
     :ok
   end
 
-  property "reading" do
-    Subject.subscribe(:lightning)
-    Subject.subscribe(:disturber_detected)
-    Subject.subscribe(:noise_level_too_high)
+  def gain do
+    one_of([constant(:indoor), constant(:outdoor)])
+  end
 
-    sensor_output = gen all gain <- one_of([constant(:indoor), constant(:outdoor)]),
+  def sensor_output do
+    gen all gain <- gain(),
       distance <- one_of([constant(:overhead), constant(:out_of_range), integer(1..62)]),
       interrupt <- one_of([
         constant(:none),
@@ -30,13 +30,19 @@ defmodule GrovePi.Lightning.Test do
         interrupt: interrupt,
       }
     end
+  end
 
-    check all output <- sensor_output do
+  property "reading" do
+    Subject.subscribe(:lightning)
+    Subject.subscribe(:disturber_detected)
+    Subject.subscribe(:noise_level_too_high)
+
+    check all output <- sensor_output() do
       stub(GrovePi.MockBoard, :read, fn(%{address: 0x04}, 8)->
         output
       end)
 
-      Subject.read()
+      Subject.read!
 
       interrupt = output.interrupt
       distance = output.distance
@@ -48,7 +54,7 @@ defmodule GrovePi.Lightning.Test do
   end
 
   property "setting" do
-    check all gain <- one_of([constant(:indoor), constant(:outdoor)]) do
+    check all gain <- gain(), max_rns: 1 do
       expect(GrovePi.MockBoard, :write, 1, fn(%{address: 0x04}, %{setting: :gain, value: ^gain})->
         :ok
       end)
@@ -58,5 +64,43 @@ defmodule GrovePi.Lightning.Test do
       assert gain == Subject.gain()
       verify!()
     end
+  end
+
+  test "reading gain" do
+    #output = Enum.at(sensor_output(), 1)
+    #stub(GrovePi.MockBoard, :read, fn(%{address: 0x04}, 8)->
+      #output
+    #end)
+
+    #send GenServer.whereis(Subject.Server), :read
+
+    assert Subject.gain() == :indoor
+  end
+
+  test "changing gain setting" do
+    expected_gain = :outdoor
+    expect(GrovePi.MockBoard, :write, 1,
+           fn(%{address: 0x04}, %{setting: :gain, value: ^expected_gain})->
+             :ok
+           end)
+
+    Subject.gain(expected_gain)
+
+    assert Subject.gain == expected_gain
+  end
+
+  test "reading results from the sensor" do
+    output = Enum.at(sensor_output(), 1)
+    stub(GrovePi.MockBoard, :read, fn(%{address: 0x04}, 8)->
+      output
+    end)
+
+    send GenServer.whereis(Subject.Server), :read
+
+    interrupt = output.interrupt
+    distance = output.distance
+
+    assert output.gain == Subject.gain()
+    assert {interrupt, distance} == Subject.last_strike()
   end
 end
