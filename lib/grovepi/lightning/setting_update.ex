@@ -2,7 +2,7 @@ defmodule GrovePi.Lightning.SettingUpdate do
   defstruct [:setting, :value]
 
   defimpl GrovePi.Writable do
-    def to_binary(_, %{setting: :gain, value: :indoor}) do
+    def to_binary(%{setting: :gain, value: :indoor}) do
       <<0x00,
         0::1*2,
         0b10010::1*5,
@@ -10,7 +10,7 @@ defmodule GrovePi.Lightning.SettingUpdate do
         >>
     end
 
-    def to_binary(_, %{setting: :gain, value: :outdoor}) do
+    def to_binary(%{setting: :gain, value: :outdoor}) do
       <<0x00,
         0::1*2,
         0b01110::1*5,

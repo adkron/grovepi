@@ -38,7 +38,7 @@ defmodule GrovePi.Lightning.Test do
     Subject.subscribe(:noise_level_too_high)
 
     check all output <- sensor_output() do
-      stub(GrovePi.MockBoard, :read, fn(%{address: 0x04}, 8)->
+      stub(GrovePi.MockBoard, :read, fn(%{address: 0x03}, 8)->
         output
       end)
 
@@ -55,7 +55,7 @@ defmodule GrovePi.Lightning.Test do
 
   property "setting" do
     check all gain <- gain(), max_rns: 1 do
-      expect(GrovePi.MockBoard, :write, 1, fn(%{address: 0x04}, %{setting: :gain, value: ^gain})->
+      expect(GrovePi.MockBoard, :write, 1, fn(%{address: 0x03}, %{setting: :gain, value: ^gain})->
         :ok
       end)
 
@@ -68,7 +68,7 @@ defmodule GrovePi.Lightning.Test do
 
   test "reading gain" do
     #output = Enum.at(sensor_output(), 1)
-    #stub(GrovePi.MockBoard, :read, fn(%{address: 0x04}, 8)->
+    #stub(GrovePi.MockBoard, :read, fn(%{address: 0x03}, 8)->
       #output
     #end)
 
@@ -80,7 +80,7 @@ defmodule GrovePi.Lightning.Test do
   test "changing gain setting" do
     expected_gain = :outdoor
     expect(GrovePi.MockBoard, :write, 1,
-           fn(%{address: 0x04}, %{setting: :gain, value: ^expected_gain})->
+           fn(%{address: 0x03}, %{setting: :gain, value: ^expected_gain})->
              :ok
            end)
 
@@ -91,7 +91,7 @@ defmodule GrovePi.Lightning.Test do
 
   test "reading results from the sensor" do
     output = Enum.at(sensor_output(), 1)
-    stub(GrovePi.MockBoard, :read, fn(%{address: 0x04}, 8)->
+    stub(GrovePi.MockBoard, :read, fn(%{address: 0x03}, 8)->
       output
     end)
 

@@ -4,7 +4,7 @@ defmodule GrovePi.Lightning.Server do
   @poll_interval 100
 
   defstruct [
-    address: 0x04,
+    address: 0x03,
     gain: :indoor,
     distance: :not_read,
     interrupt: :none,
@@ -12,7 +12,7 @@ defmodule GrovePi.Lightning.Server do
   ]
 
   @type t :: %__MODULE__{
-    address: 0x04,
+    address: 0x03,
     gain: :indoor | :outdoor,
     distance: :overhead | 1..62 | :out_of_range | :not_read,
     interrupt: :none | :noise_level_too_high | :disturber_detected | :lightning,
@@ -24,7 +24,7 @@ defmodule GrovePi.Lightning.Server do
   end
 
   def init(_) do
-    {:ok, %__MODULE__{address: 0x04} |> poll()}
+    {:ok, %__MODULE__{address: 0x03} |> poll()}
   end
 
   @board Application.get_env(:grovepi, :board, GrovePi.Board)
@@ -56,7 +56,8 @@ defmodule GrovePi.Lightning.Server do
 
   defp read(device) do
     output = @board.read(device, 8)
-    device = Map.merge(device, output) |> poll()
+    device = Map.merge(device, output)
+             |> poll()
     GrovePi.Lightning.notify(device)
     device
   end
