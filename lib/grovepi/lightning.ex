@@ -1,8 +1,23 @@
 defmodule GrovePi.Lightning do
   @moduledoc """
   Support for AS3935 Lightning Sensor
+
+  The messages subscribed for will be a tuple containing the interrupt
+  and the distance reading from the sensor. `{:lightning, 10}`. All
+  distances are in kilometers.
+
+      iex> GrovePi.Lightning.start_link([])
+      {:ok, pid}
+      iex> GrovePi.Lightning.subscribe(:lightning)
+      :ok
+      iex> flush()
+      {:lightning, :out_of_range}
+      {:lightning, 10}
+      {:lightning, :overhead}
+
   """
   defdelegate child_spec(args), to: GrovePi.Lightning.Supervisor
+  defdelegate start_link(args), to: GrovePi.Lightning.Supervisor
   @registry GrovePi.Lightning.Registry
 
   @type interrupt ::
@@ -20,10 +35,6 @@ defmodule GrovePi.Lightning do
 
   @doc """
   Subscribe for specific GrovePi.Lightning events
-
-  The messages subscribed for will be a tuple containing the interrupt
-  and the distance reading from the sensor. `{:lightning, 10}`. All
-  distances are in kilometers.
   """
   @spec subscribe(interrupt) :: :ok
   def subscribe(event) do
