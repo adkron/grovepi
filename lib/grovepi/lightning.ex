@@ -1,30 +1,56 @@
 defmodule GrovePi.Lightning do
+  @moduledoc """
+  Support for AS3935 Lightning Sensor
+  """
   defdelegate child_spec(args), to: GrovePi.Lightning.Supervisor
   @registry GrovePi.Lightning.Registry
 
+  @type interrupt ::
+  :none |
+  :noise_level_too_high |
+  :disturber_detected |
+  :lightning
+
+  @type gain :: :indoor | :outdoot
+
+  @doc """
+  Subscribe for specific GrovePi.Lightning events
+  """
+  @spec subscribe(interrupt) :: :ok
   def subscribe(event) do
     Registry.register(@registry, event, [])
   end
 
+  @doc """
+  Read cached information from the lightning sensor's last state
+  """
+  @spec read :: GrovePi.Lightning.Server.t
   def read do
     GenServer.call(GrovePi.Lightning.Server, :read_cached)
   end
 
+  @doc """
+  Read straight from the lightning sensor
+  """
+  @spec read! :: GrovePi.Lightning.Server.t
   def read! do
     GenServer.call(GrovePi.Lightning.Server, :read)
   end
 
+  @doc """
+  Check if the current gain is indoor or outdoor
+  """
+  @spec gain :: gain
   def gain do
     GenServer.call(GrovePi.Lightning.Server, :read_cached).gain
   end
 
+  @doc """
+  Change the current gain to indoor or outdoor
+  """
+  @spec gain(gain) :: :ok
   def gain(setting) do
     GenServer.cast(GrovePi.Lightning.Server, {:set, :gain, setting})
-  end
-
-  def last_strike do
-    value = GenServer.call(GrovePi.Lightning.Server, :read_cached)
-    {value.interrupt, value.distance}
   end
 
   def notify(%{interrupt: event, distance: distance}) do

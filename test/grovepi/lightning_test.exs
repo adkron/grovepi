@@ -101,6 +101,5 @@ defmodule GrovePi.Lightning.Test do
     distance = output.distance
 
     assert output.gain == Subject.gain()
-    assert {interrupt, distance} == Subject.last_strike()
   end
 end
