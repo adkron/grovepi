@@ -17,6 +17,7 @@ defmodule GrovePi.Lightning do
 
   """
   defdelegate child_spec(args), to: GrovePi.Lightning.Supervisor
+  @doc "Start the lightning sensor"
   defdelegate start_link(args), to: GrovePi.Lightning.Supervisor
   @registry GrovePi.Lightning.Registry
 

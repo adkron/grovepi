@@ -1,4 +1,5 @@
 defmodule GrovePi.Lightning.SettingUpdate do
+  @moduledoc false
   defstruct [:setting, :value]
 
   defimpl GrovePi.Writable do

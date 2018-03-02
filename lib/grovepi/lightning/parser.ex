@@ -1,4 +1,5 @@
 defmodule GrovePi.Lightning.Parser do
+  @moduledoc false
   def parse(<<next::binary-size(1), rest::binary>>) do
     reading = %{
       gain: nil,

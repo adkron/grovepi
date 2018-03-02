@@ -1,4 +1,5 @@
 defmodule GrovePi.Lightning.Server do
+  @moduledoc false
   use GenServer
   alias GrovePi.Lightning.SettingUpdate
   @poll_interval 100
