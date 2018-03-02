@@ -13,8 +13,17 @@ defmodule GrovePi.Lightning do
 
   @type gain :: :indoor | :outdoot
 
+  @type distance ::
+  :overhead |
+  1..63 |
+  :out_of_range
+
   @doc """
   Subscribe for specific GrovePi.Lightning events
+
+  The messages subscribed for will be a tuple containing the interrupt
+  and the distance reading from the sensor. `{:lightning, 10}`. All
+  distances are in kilometers.
   """
   @spec subscribe(interrupt) :: :ok
   def subscribe(event) do
