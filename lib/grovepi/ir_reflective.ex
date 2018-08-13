@@ -9,7 +9,7 @@ defmodule GrovePi.IRReflective do
 
   Listen for events from a GrovePi IR Reflective sensor. There are two types of
   events by default; close and far. When registering for an event the
-  sensor will then send a message of `{pin, :close, %{value: 0}` or
+  sensor will then send a message of `{pin, :close, %{value: 0}}` or
   `{pin, :far, %{value: 1}}`. The sensor works by polling
   `GrovePi.Digital` on the pin that you have registered to an IR Reflective sensor.
 
