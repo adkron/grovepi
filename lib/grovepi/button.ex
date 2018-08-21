@@ -1,8 +1,9 @@
 defmodule GrovePi.Button do
   alias GrovePi.Digital
 
-  use GrovePi.Poller, default_trigger: GrovePi.Button.DefaultTrigger,
-  read_type: Digital.level
+  use GrovePi.Poller,
+    default_trigger: GrovePi.Button.DefaultTrigger,
+    read_type: Digital.level()
 
   @moduledoc """
   Conveniences for working with a button.

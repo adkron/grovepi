@@ -69,12 +69,10 @@ defmodule GrovePi.Sound.HysteresisTrigger do
   defmodule State do
     @moduledoc false
     @enforce_keys [:high_threshold, :low_threshold]
-    defstruct [
-                value: 500,
-                fireable: :any,
-                high_threshold: nil,
-                low_threshold: nil,
-              ]
+    defstruct value: 500,
+              fireable: :any,
+              high_threshold: nil,
+              low_threshold: nil
   end
 
   @doc """
@@ -90,11 +88,13 @@ defmodule GrovePi.Sound.HysteresisTrigger do
     {:ok, %State{high_threshold: high_threshold, low_threshold: low_threshold}}
   end
 
-  def update(new_value, %{fireable: fireable, low_threshold: low_threshold} = state) when new_value < low_threshold and fireable != :loud do
+  def update(new_value, %{fireable: fireable, low_threshold: low_threshold} = state)
+      when new_value < low_threshold and fireable != :loud do
     {:quiet, %{state | value: new_value, fireable: :loud}}
   end
 
-  def update(new_value, %{fireable: fireable, high_threshold: high_threshold} = state) when new_value > high_threshold and fireable != :quiet do
+  def update(new_value, %{fireable: fireable, high_threshold: high_threshold} = state)
+      when new_value > high_threshold and fireable != :quiet do
     {:loud, %{state | value: new_value, fireable: :quiet}}
   end
 

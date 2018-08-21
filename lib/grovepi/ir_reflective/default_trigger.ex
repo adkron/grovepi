@@ -34,6 +34,7 @@ defmodule GrovePi.IRReflective.DefaultTrigger do
   end
 
   def update(value, %{value: value} = state), do: {:ok, state}
+
   def update(new_value, state) do
     {event(new_value), %{state | value: new_value}}
   end

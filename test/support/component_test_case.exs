@@ -1,5 +1,6 @@
 defmodule ComponentTestCase do
   use ExUnit.CaseTemplate
+
   using do
     quote do
       @pin 5
@@ -8,7 +9,7 @@ defmodule ComponentTestCase do
   end
 
   setup tags do
-    prefix = String.to_atom("#{Time.to_string(Time.utc_now)}#{__MODULE__}")
+    prefix = String.to_atom("#{Time.to_string(Time.utc_now())}#{__MODULE__}")
     board = GrovePi.Board.i2c_name(prefix)
 
     {:ok, _} = GrovePi.Supervisor.start_link(0x40, prefix)
@@ -20,4 +21,3 @@ defmodule ComponentTestCase do
     {:ok, tags}
   end
 end
-

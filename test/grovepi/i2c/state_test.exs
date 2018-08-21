@@ -28,15 +28,17 @@ defmodule GrovePi.I2C.StateTest do
 
     result = State.pop_all_writes(state)
 
-    assert  result == {@error, state}
+    assert result == {@error, state}
   end
 
   test "pop_all_writes returns all writes" do
-    state =
-      %State{responses: [], writes: [
+    state = %State{
+      responses: [],
+      writes: [
         %Write{address: 0x01, data: 0x02},
-        %Write{address: 0x01, data: 0x01},
-      ]}
+        %Write{address: 0x01, data: 0x01}
+      ]
+    }
 
     {writes, new_state} = State.pop_all_writes(state)
 
@@ -49,15 +51,17 @@ defmodule GrovePi.I2C.StateTest do
 
     result = State.pop_all_data(state)
 
-    assert  result == {@error, state}
+    assert result == {@error, state}
   end
 
   test "pop_all_data returns all writes" do
-    state =
-      %State{responses: [], writes: [
+    state = %State{
+      responses: [],
+      writes: [
         %Write{address: 0x01, data: 0x02},
-        %Write{address: 0x01, data: 0x01},
-      ]}
+        %Write{address: 0x01, data: 0x01}
+      ]
+    }
 
     {data, new_state} = State.pop_all_data(state)
 
@@ -70,23 +74,29 @@ defmodule GrovePi.I2C.StateTest do
 
     result = State.pop_last_write(state)
 
-    assert  result == {@error, state}
+    assert result == {@error, state}
   end
 
   test "pop_last_write returns last write" do
-    state =
-      %State{responses: [], writes: [
+    state = %State{
+      responses: [],
+      writes: [
         %Write{address: 0x01, data: 0x02},
-        %Write{address: 0x01, data: 0x01},
-      ]}
+        %Write{address: 0x01, data: 0x01}
+      ]
+    }
 
     {write, new_state} = State.pop_last_write(state)
 
     assert write.data == 0x02
+
     assert new_state ==
-      %State{responses: [], writes: [
-        %Write{address: 0x01, data: 0x01},
-      ]}
+             %State{
+               responses: [],
+               writes: [
+                 %Write{address: 0x01, data: 0x01}
+               ]
+             }
   end
 
   test "pop_last_write_data return error if no writes" do
@@ -94,23 +104,29 @@ defmodule GrovePi.I2C.StateTest do
 
     result = State.pop_last_write_data(state)
 
-    assert  result == {@error, state}
+    assert result == {@error, state}
   end
 
   test "pop_last_write_data returns last data" do
-    state =
-      %State{responses: [], writes: [
+    state = %State{
+      responses: [],
+      writes: [
         %Write{address: 0x01, data: 0x02},
-        %Write{address: 0x01, data: 0x01},
-      ]}
+        %Write{address: 0x01, data: 0x01}
+      ]
+    }
 
     {data, new_state} = State.pop_last_write_data(state)
 
     assert data == 0x02
+
     assert new_state ==
-      %State{responses: [], writes: [
-        %Write{address: 0x01, data: 0x01},
-      ]}
+             %State{
+               responses: [],
+               writes: [
+                 %Write{address: 0x01, data: 0x01}
+               ]
+             }
   end
 
   test "pop_last_response returns error if no responses" do

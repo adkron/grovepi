@@ -1,8 +1,9 @@
 defmodule GrovePi.Sound do
   alias GrovePi.Analog
 
-  use GrovePi.Poller, default_trigger: GrovePi.Sound.HysteresisTrigger,
-  read_type: Analog.adc_level
+  use GrovePi.Poller,
+    default_trigger: GrovePi.Sound.HysteresisTrigger,
+    read_type: Analog.adc_level()
 
   @moduledoc """
   Conveniences for working with a sound sensor.

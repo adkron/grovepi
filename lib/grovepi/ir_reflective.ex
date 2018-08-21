@@ -1,8 +1,9 @@
 defmodule GrovePi.IRReflective do
   alias GrovePi.Digital
 
-  use GrovePi.Poller, default_trigger: GrovePi.IRReflective.DefaultTrigger,
-  read_type: Digital.level
+  use GrovePi.Poller,
+    default_trigger: GrovePi.IRReflective.DefaultTrigger,
+    read_type: Digital.level()
 
   @moduledoc """
   Conveniences for working with an Infrared Reflective Sensor.

@@ -21,13 +21,10 @@ defmodule GrovePi.Buzzer do
 
   defmodule State do
     @moduledoc false
-    defstruct [:pin,
-               :turnoff_time,
-               :prefix,
-             ]
+    defstruct [:pin, :turnoff_time, :prefix]
   end
 
-  @spec start_link(GrovePi.pin, atom) :: Supervisor.on_start
+  @spec start_link(GrovePi.pin(), atom) :: Supervisor.on_start()
   def start_link(pin, opts \\ []) do
     prefix = Keyword.get(opts, :prefix, Default)
     opts = Keyword.put(opts, :name, Pin.name(prefix, pin))
@@ -35,7 +32,7 @@ defmodule GrovePi.Buzzer do
     GenServer.start_link(__MODULE__, [pin, prefix], opts)
   end
 
-  @spec buzz(GrovePi.pin, duration, atom) :: :ok
+  @spec buzz(GrovePi.pin(), duration, atom) :: :ok
   def buzz(pin, duration, prefix) do
     GenServer.cast(Pin.name(prefix, pin), {:buzz, duration})
   end
@@ -48,7 +45,7 @@ defmodule GrovePi.Buzzer do
     buzz(pin, duration_or_prefix, Default)
   end
 
-  @spec off(GrovePi.pin) :: :ok
+  @spec off(GrovePi.pin()) :: :ok
   def off(pin, prefix \\ Default) do
     GenServer.cast(Pin.name(prefix, pin), :off)
   end
@@ -88,6 +85,7 @@ defmodule GrovePi.Buzzer do
     if System.monotonic_time(:millisecond) >= state.turnoff_time do
       :ok = Digital.write(state.prefix, state.pin, 0)
     end
+
     {:noreply, state}
   end
 end

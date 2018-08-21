@@ -83,7 +83,7 @@ defmodule GrovePi.I2C do
     {:reply, data, new_state}
   end
 
-  def handle_call({:read,  _len}, _from, state) do
+  def handle_call({:read, _len}, _from, state) do
     {message, new_state} = State.pop_last_response(state)
     {:reply, message, new_state}
   end

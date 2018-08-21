@@ -6,8 +6,7 @@ defmodule GrovePi.UltrasonicTest do
     {:ok, tags}
   end
 
-  test "gets distance",
-    %{prefix: prefix, board: board} do
+  test "gets distance", %{prefix: prefix, board: board} do
     distance = 20
 
     GrovePi.I2C.add_response(board, <<1, distance::big-integer-size(16)>>)

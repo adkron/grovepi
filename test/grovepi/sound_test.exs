@@ -6,30 +6,31 @@ defmodule GrovePi.SoundTest do
   setup %{prefix: prefix} = tags do
     poll_interval = Map.get(tags, :poll_interval, 1)
 
-    {:ok, _} = GrovePi.Sound.start_link(@pin,
-                                         poll_interval: poll_interval,
-                                         prefix: prefix,
-                                       )
+    {:ok, _} =
+      GrovePi.Sound.start_link(
+        @pin,
+        poll_interval: poll_interval,
+        prefix: prefix
+      )
 
-      {:ok, tags}
+    {:ok, tags}
   end
 
   @tag :capture_log
-  test "recovers from I2C error",
-  %{prefix: prefix, board: board} do
+  test "recovers from I2C error", %{prefix: prefix, board: board} do
     GrovePi.Sound.subscribe(@pin, :quiet, prefix)
+
     GrovePi.I2C.add_responses(board, [
-                                {:error, :i2c_write_failed},
-                                @exceeded_threshold,
-                                @under_threshold,
-                              ])
+      {:error, :i2c_write_failed},
+      @exceeded_threshold,
+      @under_threshold
+    ])
 
     assert_receive {@pin, :quiet, _}, 300
   end
 
   @tag poll_interval: 1_000_000
-  test "reading notifies subscribers",
-  %{prefix: prefix, board: board} do
+  test "reading notifies subscribers", %{prefix: prefix, board: board} do
     GrovePi.I2C.add_responses(board, [@exceeded_threshold, @under_threshold])
 
     assert GrovePi.Sound.read(@pin, prefix) == 511

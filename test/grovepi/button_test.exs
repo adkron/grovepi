@@ -6,30 +6,31 @@ defmodule GrovePi.ButtonTest do
   setup %{prefix: prefix} = tags do
     poll_interval = Map.get(tags, :poll_interval, 1)
 
-    {:ok, _} = GrovePi.Button.start_link(@pin,
-                                         poll_interval: poll_interval,
-                                         prefix: prefix,
-                                       )
+    {:ok, _} =
+      GrovePi.Button.start_link(
+        @pin,
+        poll_interval: poll_interval,
+        prefix: prefix
+      )
 
-      {:ok, tags}
+    {:ok, tags}
   end
 
   @tag :capture_log
-  test "recovers from I2C error",
-  %{prefix: prefix, board: board} do
+  test "recovers from I2C error", %{prefix: prefix, board: board} do
     GrovePi.Button.subscribe(@pin, :released, prefix)
+
     GrovePi.I2C.add_responses(board, [
-                                {:error, :i2c_write_failed},
-                                @pressed,
-                                @released,
-                              ])
+      {:error, :i2c_write_failed},
+      @pressed,
+      @released
+    ])
 
     assert_receive {@pin, :released, _}, 300
   end
 
   @tag poll_interval: 1_000_000
-  test "reading gets from the grovepi board",
-  %{prefix: prefix, board: board} do
+  test "reading gets from the grovepi board", %{prefix: prefix, board: board} do
     GrovePi.I2C.add_responses(board, [@pressed, @released])
 
     assert GrovePi.Button.read(@pin, prefix) == 1

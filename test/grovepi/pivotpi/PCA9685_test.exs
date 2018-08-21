@@ -12,17 +12,18 @@ defmodule GrovePi.PivotPi.PCA9685Test do
 
     messages = GrovePi.I2C.get_all_writes(board)
     %{address: address} = List.first(messages)
-    data = Enum.map(messages, &(&1.data))
+    data = Enum.map(messages, & &1.data)
 
     assert address == 0x40
+
     assert data == [
-      <<0xfa, 0, 0, 0, 16>>,
-      <<0x00, 0x30>>,
-      <<0x01, 0x14>>,
-      <<0x00, 0x30>>,
-      <<0xfe, 0x65>>,
-      <<0x00, 0x20>>
-    ]
+             <<0xFA, 0, 0, 0, 16>>,
+             <<0x00, 0x30>>,
+             <<0x01, 0x14>>,
+             <<0x00, 0x30>>,
+             <<0xFE, 0x65>>,
+             <<0x00, 0x20>>
+           ]
   end
 
   test "sets channel pwm values", %{board: board} do

@@ -28,9 +28,9 @@ defmodule GrovePi.Poller do
   `GrovePi.Trigger`.
   """
 
-  @callback read_value(atom, GrovePi.pin) :: any
+  @callback read_value(atom, GrovePi.pin()) :: any
 
-  defmacro __using__([default_trigger: default_trigger, read_type: read_type]) do
+  defmacro __using__(default_trigger: default_trigger, read_type: read_type) do
     quote location: :keep do
       use GenServer
       @behaviour GrovePi.Poller
@@ -43,13 +43,7 @@ defmodule GrovePi.Poller do
 
       defmodule State do
         @moduledoc false
-        defstruct [:pin,
-                   :trigger_state,
-                   :poll_interval,
-                   :prefix,
-                   :trigger,
-                   :poll_reference,
-                 ]
+        defstruct [:pin, :trigger_state, :poll_interval, :prefix, :trigger, :poll_reference]
 
         def poll(%State{poll_interval: 0} = state, pid) do
           state
@@ -84,7 +78,7 @@ defmodule GrovePi.Poller do
       * `:trigger_opts` - This is used to pass options to a trigger `init\1`. The default is `[]`
       """
 
-      @spec start_link(GrovePi.pin) :: Supervisor.on_start
+      @spec start_link(GrovePi.pin()) :: Supervisor.on_start()
       def start_link(pin, opts \\ []) do
         poll_interval = Keyword.get(opts, :poll_interval, @poll_interval)
         trigger = Keyword.get(opts, :trigger, unquote(default_trigger))
@@ -92,24 +86,22 @@ defmodule GrovePi.Poller do
         prefix = Keyword.get(opts, :prefix, Default)
         opts = Keyword.put(opts, :name, Pin.name(prefix, pin))
 
-        GenServer.start_link(__MODULE__,
-                             [pin,
-                              poll_interval,
-                              prefix,
-                              trigger,
-                              trigger_opts],
-                             opts
-                           )
+        GenServer.start_link(
+          __MODULE__,
+          [pin, poll_interval, prefix, trigger, trigger_opts],
+          opts
+        )
       end
 
       def init([pin, poll_interval, prefix, trigger, trigger_opts]) do
         {:ok, trigger_state} = trigger.init(trigger_opts)
+
         state = %State{
           pin: pin,
           poll_interval: poll_interval,
           prefix: prefix,
           trigger: trigger,
-          trigger_state: trigger_state,
+          trigger_state: trigger_state
         }
 
         state_with_poll_reference = schedule_poll(state)
@@ -120,7 +112,7 @@ defmodule GrovePi.Poller do
       @doc """
       Stops polling immediately
       """
-      @spec stop_polling(GrovePi.pin, atom) :: :ok
+      @spec stop_polling(GrovePi.pin(), atom) :: :ok
       def stop_polling(pin, prefix \\ Default) do
         GenServer.cast(Pin.name(prefix, pin), {:change_polling, 0})
       end
@@ -129,7 +121,7 @@ defmodule GrovePi.Poller do
       Stops the current scheduled polling event and starts a new one with
       the new interval.
       """
-      @spec change_polling(GrovePi.pin, integer, atom) :: :ok
+      @spec change_polling(GrovePi.pin(), integer, atom) :: :ok
       def change_polling(pin, interval, prefix \\ Default) do
         GenServer.cast(Pin.name(prefix, pin), {:change_polling, interval})
       end
@@ -137,7 +129,7 @@ defmodule GrovePi.Poller do
       @doc """
       Read the value from the specified pin.
       """
-      @spec read(GrovePi.pin, atom) :: unquote(read_type)
+      @spec read(GrovePi.pin(), atom) :: unquote(read_type)
       def read(pin, prefix \\ Default) do
         GenServer.call(Pin.name(prefix, pin), :read)
       end
@@ -145,17 +137,19 @@ defmodule GrovePi.Poller do
       @doc """
       Subscribes the current process to an event.
       """
-      @spec subscribe(GrovePi.pin, GrovePi.Trigger.event, atom)
-      :: {:ok, pid} | {:error, {:already_registered, pid}}
+      @spec subscribe(GrovePi.pin(), GrovePi.Trigger.event(), atom) ::
+              {:ok, pid} | {:error, {:already_registered, pid}}
       def subscribe(pin, event, prefix \\ Default) do
         Subscriber.subscribe(prefix, {pin, event})
       end
 
       def handle_cast({:change_polling, interval}, state) do
-        new_state = state
-                    |> State.cancel_polling
-                    |> State.change_interval(interval)
-                    |> State.poll(self())
+        new_state =
+          state
+          |> State.cancel_polling()
+          |> State.change_interval(interval)
+          |> State.poll(self())
+
         {:noreply, new_state}
       end
 
@@ -170,13 +164,12 @@ defmodule GrovePi.Poller do
         {:noreply, new_state}
       end
 
-      @spec update_value(State) ::State
+      @spec update_value(State) :: State
       defp update_value(state) do
         with value <- read_value(state.prefix, state.pin),
-        trigger = {_, trigger_state} <-
-                  state.trigger.update(value, state.trigger_state),
-        :ok <- notify(trigger, state.prefix, state.pin),
-        do: {value, %{state | trigger_state: trigger_state}}
+             trigger = {_, trigger_state} <- state.trigger.update(value, state.trigger_state),
+             :ok <- notify(trigger, state.prefix, state.pin),
+             do: {value, %{state | trigger_state: trigger_state}}
       end
 
       defp notify({:ok, _}, _, _) do

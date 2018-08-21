@@ -19,11 +19,10 @@ defmodule GrovePi.Supervisor do
     children = [
       supervisor(GrovePi.Registry.Pin, [prefix]),
       supervisor(GrovePi.Registry.Subscriber, [prefix]),
-
-      worker(GrovePi.Board, [grovepi_address, prefix]),
+      worker(GrovePi.Board, [grovepi_address, prefix])
     ]
 
-    supervise children, strategy: :one_for_one, name: name(prefix)
+    supervise(children, strategy: :one_for_one, name: name(prefix))
   end
 
   defp name(prefix) do

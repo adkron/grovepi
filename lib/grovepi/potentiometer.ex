@@ -1,8 +1,9 @@
 defmodule GrovePi.Potentiometer do
   alias GrovePi.Analog
 
-  use GrovePi.Poller, default_trigger: GrovePi.Potentiometer.DefaultTrigger,
-  read_type: Analog.adc_level
+  use GrovePi.Poller,
+    default_trigger: GrovePi.Potentiometer.DefaultTrigger,
+    read_type: Analog.adc_level()
 
   @moduledoc """
   Conveniences for reading from a potentiometer or rotary angle sensor.

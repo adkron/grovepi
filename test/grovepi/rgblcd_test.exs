@@ -16,11 +16,11 @@ defmodule GrovePi.RGBLCDTest do
     result = RGBLCD.get_default_config()
 
     assert result ==
-      %RGBLCD.Config{
-        display_control: 12,
-        entry_mode: 6,
-        function: 56
-      }
+             %RGBLCD.Config{
+               display_control: 12,
+               entry_mode: 6,
+               function: 56
+             }
   end
 
   test "autoscroll command", %{board: board, config: config} do
@@ -81,11 +81,11 @@ defmodule GrovePi.RGBLCDTest do
     :ok = RGBLCD.cursor_left(3)
 
     assert I2C.get_all_data(board) ==
-      [
-        <<@lcd_cmd, cursor_left>>,
-        <<@lcd_cmd, cursor_left>>,
-        <<@lcd_cmd, cursor_left>>
-      ]
+             [
+               <<@lcd_cmd, cursor_left>>,
+               <<@lcd_cmd, cursor_left>>,
+               <<@lcd_cmd, cursor_left>>
+             ]
   end
 
   test "cursor_off", %{board: board, config: config} do
@@ -120,11 +120,11 @@ defmodule GrovePi.RGBLCDTest do
     :ok = RGBLCD.cursor_right(3)
 
     assert I2C.get_all_data(board) ==
-      [
-        <<@lcd_cmd, cursor_right>>,
-        <<@lcd_cmd, cursor_right>>,
-        <<@lcd_cmd, cursor_right>>
-      ]
+             [
+               <<@lcd_cmd, cursor_right>>,
+               <<@lcd_cmd, cursor_right>>,
+               <<@lcd_cmd, cursor_right>>
+             ]
   end
 
   test "display_off command", %{board: board, config: config} do
@@ -154,7 +154,7 @@ defmodule GrovePi.RGBLCDTest do
   end
 
   test "initialize command", %{board: board, config: config} do
-    lcd_address = 0x3e
+    lcd_address = 0x3E
     rgb_address = 0x62
 
     {:ok, result} = RGBLCD.initialize()
@@ -162,19 +162,20 @@ defmodule GrovePi.RGBLCDTest do
     writes = I2C.get_all_writes(board)
 
     assert config == result
-    assert Enum.map(writes, &({&1.address, &1.data})) ==
-      [
-        {lcd_address, <<@lcd_cmd, 1>>},
-        {lcd_address, <<@lcd_cmd, 56>>},
-        {lcd_address, <<@lcd_cmd, 12>>},
-        {lcd_address, <<@lcd_cmd, 6>>},
-        {rgb_address, <<0, 0>>},
-        {rgb_address, <<8, 255>>},
-        {rgb_address, <<1, 32>>},
-        {rgb_address, <<4, 255>>},
-        {rgb_address, <<3, 255>>},
-        {rgb_address, <<2, 255>>}
-      ]
+
+    assert Enum.map(writes, &{&1.address, &1.data}) ==
+             [
+               {lcd_address, <<@lcd_cmd, 1>>},
+               {lcd_address, <<@lcd_cmd, 56>>},
+               {lcd_address, <<@lcd_cmd, 12>>},
+               {lcd_address, <<@lcd_cmd, 6>>},
+               {rgb_address, <<0, 0>>},
+               {rgb_address, <<8, 255>>},
+               {rgb_address, <<1, 32>>},
+               {rgb_address, <<4, 255>>},
+               {rgb_address, <<3, 255>>},
+               {rgb_address, <<2, 255>>}
+             ]
   end
 
   test "scroll_left command", %{board: board} do
@@ -191,11 +192,11 @@ defmodule GrovePi.RGBLCDTest do
     :ok = RGBLCD.scroll_left(3)
 
     assert I2C.get_all_data(board) ==
-      [
-        <<@lcd_cmd, scroll_left>>,
-        <<@lcd_cmd, scroll_left>>,
-        <<@lcd_cmd, scroll_left>>
-      ]
+             [
+               <<@lcd_cmd, scroll_left>>,
+               <<@lcd_cmd, scroll_left>>,
+               <<@lcd_cmd, scroll_left>>
+             ]
   end
 
   test "scroll_right command", %{board: board} do
@@ -212,11 +213,11 @@ defmodule GrovePi.RGBLCDTest do
     :ok = RGBLCD.scroll_right(3)
 
     assert I2C.get_all_data(board) ==
-      [
-        <<@lcd_cmd, scroll_right>>,
-        <<@lcd_cmd, scroll_right>>,
-        <<@lcd_cmd, scroll_right>>
-      ]
+             [
+               <<@lcd_cmd, scroll_right>>,
+               <<@lcd_cmd, scroll_right>>,
+               <<@lcd_cmd, scroll_right>>
+             ]
   end
 
   test "set_color_white command", %{board: board} do
@@ -228,11 +229,11 @@ defmodule GrovePi.RGBLCDTest do
     :ok = RGBLCD.set_color_white()
 
     assert I2C.get_all_data(board) ==
-      [
-        <<reg_red, max>>,
-        <<reg_green, max>>,
-        <<reg_blue, max>>
-      ]
+             [
+               <<reg_red, max>>,
+               <<reg_green, max>>,
+               <<reg_blue, max>>
+             ]
   end
 
   test "set_cursor first row", %{board: board} do
@@ -276,11 +277,11 @@ defmodule GrovePi.RGBLCDTest do
     :ok = RGBLCD.set_rgb(red, green, blue)
 
     assert I2C.get_all_data(board) ==
-      [
-        <<reg_red, red>>,
-        <<reg_green, green>>,
-        <<reg_blue, blue>>
-      ]
+             [
+               <<reg_red, red>>,
+               <<reg_green, green>>,
+               <<reg_blue, blue>>
+             ]
   end
 
   test "set_text command", %{board: board} do
@@ -290,10 +291,20 @@ defmodule GrovePi.RGBLCDTest do
     :ok = RGBLCD.set_text(text)
 
     assert I2C.get_all_data(board) ==
-      [
-        <<@lcd_cmd, clear_display>>,
-        "@H", "@e", "@l", "@l", "@o", "@ ", "@W", "@o", "@r", "@l", "@d"
-      ]
+             [
+               <<@lcd_cmd, clear_display>>,
+               "@H",
+               "@e",
+               "@l",
+               "@l",
+               "@o",
+               "@ ",
+               "@W",
+               "@o",
+               "@r",
+               "@l",
+               "@d"
+             ]
   end
 
   test "text_left_to_right command", %{board: board, config: config} do
@@ -320,13 +331,23 @@ defmodule GrovePi.RGBLCDTest do
     :ok = RGBLCD.write_text(text)
 
     assert I2C.get_all_data(board) ==
-      [
-        "@H", "@e", "@l", "@l", "@o", "@ ", "@W", "@o", "@r", "@l", "@d"
-      ]
+             [
+               "@H",
+               "@e",
+               "@l",
+               "@l",
+               "@o",
+               "@ ",
+               "@W",
+               "@o",
+               "@r",
+               "@l",
+               "@d"
+             ]
   end
 
   test "send_lcd_cmd command", %{board: board} do
-    lcd_address = 0x3e
+    lcd_address = 0x3E
     cmd = 0x01
 
     RGBLCD.send_lcd_cmd(cmd)
@@ -338,7 +359,7 @@ defmodule GrovePi.RGBLCDTest do
   end
 
   test "send_lcd_write command", %{board: board} do
-    lcd_address = 0x3e
+    lcd_address = 0x3E
     letter_e = 101
 
     RGBLCD.send_lcd_write(letter_e)

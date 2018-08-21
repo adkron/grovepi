@@ -1,8 +1,9 @@
 defmodule GrovePi.DHT do
   alias GrovePi.Board
 
-  use GrovePi.Poller, default_trigger: GrovePi.DHT.DefaultTrigger,
-  read_type: Digital.level
+  use GrovePi.Poller,
+    default_trigger: GrovePi.DHT.DefaultTrigger,
+    read_type: Digital.level()
 
   @moduledoc """
   Conveniences for reading from a DHT sensor.
@@ -40,8 +41,8 @@ defmodule GrovePi.DHT do
 
   def read_value(prefix, pin) do
     with :ok <- Board.send_request(prefix, <<40, pin, @module_type, 0>>),
-          <<_, temp::little-float-size(32), humidity::little-float-size(32)>>
-            <- Board.get_response(prefix, 9),
-    do: {temp, humidity}
+         <<_, temp::little-float-size(32), humidity::little-float-size(32)>> <-
+           Board.get_response(prefix, 9),
+         do: {temp, humidity}
   end
 end

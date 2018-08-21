@@ -42,7 +42,7 @@ defmodule GrovePi.Board do
   Send a request to the GrovePi. This is not normally called directly
   except when interacting with an unsupported sensor.
   """
-  @spec send_request(GenServer.server, binary) :: :ok | {:error, term}
+  @spec send_request(GenServer.server(), binary) :: :ok | {:error, term}
   def send_request(prefix, message) when byte_size(message) == 4 do
     send_request_with_retry(i2c_name(prefix), message, @i2c_retry_count)
   end
@@ -76,6 +76,7 @@ defmodule GrovePi.Board do
   # The GrovePi has intermittent I2C communication failures. These
   # are usually harmless, so automatically retry.
   defp send_request_with_retry(_board, _message, 0), do: {:error, :too_many_retries}
+
   defp send_request_with_retry(board, message, retries_left) do
     case @i2c.write(board, message) do
       {:error, _} -> send_request_with_retry(board, message, retries_left - 1)
@@ -84,6 +85,7 @@ defmodule GrovePi.Board do
   end
 
   defp get_response_with_retry(_board, _len, 0), do: {:error, :too_many_retries}
+
   defp get_response_with_retry(board, len, retries_left) do
     case @i2c.read(board, len) do
       {:error, _} -> get_response_with_retry(board, len, retries_left - 1)

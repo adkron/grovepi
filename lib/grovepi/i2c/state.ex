@@ -6,9 +6,7 @@ defmodule GrovePi.I2C.State do
   defstruct responses: [], writes: []
 
   def add_input(%State{} = state, write) do
-    %{state |
-      writes: [add_time_to_write(write) | state.writes]
-    }
+    %{state | writes: [add_time_to_write(write) | state.writes]}
   end
 
   def add_responses(%State{} = state, responses) do
@@ -20,7 +18,7 @@ defmodule GrovePi.I2C.State do
   end
 
   def pop_all_writes(%State{} = state) do
-    Map.get_and_update(state, :writes, &(rev_and_update_writes(&1)))
+    Map.get_and_update(state, :writes, &rev_and_update_writes(&1))
   end
 
   def pop_all_data(%State{writes: []} = state) do
@@ -67,7 +65,7 @@ defmodule GrovePi.I2C.State do
   end
 
   defp get_all_data(writes) do
-    Enum.map(writes, &(&1.data))
+    Enum.map(writes, & &1.data)
   end
 
   defp get_data({:error, error}), do: {:error, error}

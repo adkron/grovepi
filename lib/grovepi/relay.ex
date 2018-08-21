@@ -24,7 +24,7 @@ defmodule GrovePi.Relay do
   @doc """
   Turns off the appliance, lamp, etc. connected to the relay.
   """
-  @spec off(GrovePi.pin) :: :ok | {:error, term}
+  @spec off(GrovePi.pin()) :: :ok | {:error, term}
   def off(pin) do
     Digital.write(pin, 0)
   end
@@ -32,7 +32,7 @@ defmodule GrovePi.Relay do
   @doc """
   Turns on the appliance, lamp, etc. connected to the relay.
   """
-  @spec on(GrovePi.pin) :: :ok | {:error, term}
+  @spec on(GrovePi.pin()) :: :ok | {:error, term}
   def on(pin) do
     Digital.write(pin, 1)
   end
@@ -40,7 +40,7 @@ defmodule GrovePi.Relay do
   @doc """
   Sets the pin mode to output. Required prior to using `on/1` or `off/1`.
   """
-  @spec initialize(GrovePi.pin) :: :ok | {:error, term}
+  @spec initialize(GrovePi.pin()) :: :ok | {:error, term}
   def initialize(pin) do
     Digital.set_pin_mode(pin, :output)
   end

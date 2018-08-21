@@ -6,5 +6,5 @@ config :mix_test_watch,
   tasks: [
     "deps.get",
     "test",
-    "credo --strict",
+    "credo --strict"
   ]

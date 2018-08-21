@@ -30,17 +30,16 @@ defmodule GrovePi.PivotPiTest do
 
     data =
       board
-      |> GrovePi.I2C.get_all_writes
-      |> Enum.map(&(&1.data))
+      |> GrovePi.I2C.get_all_writes()
+      |> Enum.map(& &1.data)
 
     assert data == [
-      <<0xfa, 0, 0, 0, 16>>,
-      <<0x00, 0x30>>,
-      <<0x01, 0x14>>,
-      <<0x00, 0x30>>,
-      <<0xfe, 0x65>>,
-      <<0x00, 0x20>>
-    ]
+             <<0xFA, 0, 0, 0, 16>>,
+             <<0x00, 0x30>>,
+             <<0x01, 0x14>>,
+             <<0x00, 0x30>>,
+             <<0xFE, 0x65>>,
+             <<0x00, 0x20>>
+           ]
   end
 end
-

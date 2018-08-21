@@ -46,7 +46,7 @@ defmodule GrovePi.PivotPi do
 
   defp translate_to_servo_range(angle_value) do
     value_scaled = angle_value / 180
-    round(150 + (value_scaled * 450))
+    round(150 + value_scaled * 450)
   end
 
   @doc """
@@ -59,7 +59,7 @@ defmodule GrovePi.PivotPi do
   end
 
   defp translate_to_12_bit(percent) do
-    round((percent / 100) * @max_12_bit_value)
+    round(percent / 100 * @max_12_bit_value)
   end
 
   defp convert_to_led(channel) do

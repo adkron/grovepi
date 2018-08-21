@@ -21,11 +21,14 @@ defmodule GrovePi.RGBLCD do
   # C++ library: https://github.com/Seeed-Studio/Grove_LCD_RGB_Backlight
 
   @rgb_address 0x62
-  @lcd_address 0x3e
+  @lcd_address 0x3E
 
-  @reg_red 0x04        # pwm2
-  @reg_green 0x03      # pwm1
-  @reg_blue 0x02       # pwm0
+  # pwm2
+  @reg_red 0x04
+  # pwm1
+  @reg_green 0x03
+  # pwm0
+  @reg_blue 0x02
 
   @reg_mode1 0x00
   @reg_mode2 0x01
@@ -124,7 +127,8 @@ defmodule GrovePi.RGBLCD do
   """
   def clear_display() do
     send_lcd_cmd(@lcd_clear_display)
-    Process.sleep(50) #cmd takes a long time C++ library slept for 2000
+    # cmd takes a long time C++ library slept for 2000
+    Process.sleep(50)
   end
 
   @doc """
@@ -163,6 +167,7 @@ defmodule GrovePi.RGBLCD do
       do_cursor_left()
       Process.sleep(50)
     end
+
     :ok
   end
 
@@ -209,6 +214,7 @@ defmodule GrovePi.RGBLCD do
       do_cursor_right()
       Process.sleep(50)
     end
+
     :ok
   end
 
@@ -287,7 +293,8 @@ defmodule GrovePi.RGBLCD do
   """
   def home() do
     send_lcd_cmd(@lcd_return_home)
-    Process.sleep(50) #cmd takes a long time C++ library slept for 2000
+    # cmd takes a long time C++ library slept for 2000
+    Process.sleep(50)
   end
 
   @doc """
@@ -303,11 +310,11 @@ defmodule GrovePi.RGBLCD do
     send_lcd_cmd(config.display_control)
     send_lcd_cmd(config.entry_mode)
 
-    #backlit init
+    # backlit init
     send_rgb(@reg_mode1, 0)
 
     # set LEDs controllable by both PWM and GRPPWM registers
-    send_rgb(@reg_output, 0xff)
+    send_rgb(@reg_output, 0xFF)
 
     # set reg_mode2 values
     # 0010 0000 -> 0x20 (DMBLNK to 1, ie blinky mode)
@@ -326,6 +333,7 @@ defmodule GrovePi.RGBLCD do
       do_scroll_left()
       Process.sleep(50)
     end
+
     :ok
   end
 
@@ -344,6 +352,7 @@ defmodule GrovePi.RGBLCD do
       do_scroll_right()
       Process.sleep(50)
     end
+
     :ok
   end
 
@@ -433,10 +442,12 @@ defmodule GrovePi.RGBLCD do
   end
 
   defp send_chars(<<>>), do: :ok
+
   defp send_chars(<<?\n, rest::binary>>) do
     set_cursor(1, 0)
     send_chars(rest)
   end
+
   defp send_chars(<<text, rest::binary>>) do
     send_lcd_write(text)
     send_chars(rest)

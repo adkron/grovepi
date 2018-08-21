@@ -16,15 +16,15 @@ defmodule GrovePi.PivotPi.PCA9685 do
   @type channel :: 0..15
 
   # registers/etc:
-  @pca9685_address     0x40
-  @mode1               0x00
-  @mode2               0x01
-  @prescale            0xfe
-  @led0_on_l           0x06
+  @pca9685_address 0x40
+  @mode1 0x00
+  @mode2 0x01
+  @prescale 0xFE
+  @led0_on_l 0x06
   # @led0_on_h           0x07
   # @led0_off_l          0x08
   # @led0_off_h          0x09
-  @all_led_on_l        0xfa
+  @all_led_on_l 0xFA
   # @all_led_on_h        0xfb
   # @all_led_off_l       0xfc
   # @all_led_off_h       0xfd
@@ -34,18 +34,20 @@ defmodule GrovePi.PivotPi.PCA9685 do
   # @mode1_subadr1       0x02 # Unused
   # @mode1_subadr2       0x03 # Unused
   # @mode1_subadr3       0x04 # Unused
-  @mode1_sleep           0x10
-  @mode1_ai              0x20
+  @mode1_sleep 0x10
+  @mode1_ai 0x20
   # @mode1_extclk        0x40 # Unused
   # @mode1_restart       0x80 # Unused
-  @mode1_default         @mode1_ai
+  @mode1_default @mode1_ai
 
   # mode2 options:
-  @mode2_outdrv          0x04  # Totem pole drive
-  @mode2_invrt           0x10  # Inverted signal
-  @mode2_default         @mode2_outdrv ||| @mode2_invrt
+  # Totem pole drive
+  @mode2_outdrv 0x04
+  # Inverted signal
+  @mode2_invrt 0x10
+  @mode2_default @mode2_outdrv ||| @mode2_invrt
 
-  @default_freq        60
+  @default_freq 60
 
   @doc false
   def initialize() do
@@ -78,9 +80,7 @@ defmodule GrovePi.PivotPi.PCA9685 do
   """
   @spec set_pwm(channel | :all, integer, integer) :: :ok | {:error, term}
   def set_pwm(channel, on, off) do
-    send_cmd(<<channel_to_register(channel),
-               on::little-size(16),
-               off::little-size(16)>>)
+    send_cmd(<<channel_to_register(channel), on::little-size(16), off::little-size(16)>>)
   end
 
   @doc """
@@ -102,7 +102,7 @@ defmodule GrovePi.PivotPi.PCA9685 do
   defp channel_to_register(channel) when is_integer(channel), do: @led0_on_l + 4 * channel
   defp channel_to_register(:all), do: @all_led_on_l
 
-  defp frequency_to_prescale(hz), do: round(((25000000.0 / 4096.0) / hz) - 1.0)
+  defp frequency_to_prescale(hz), do: round(25_000_000.0 / 4096.0 / hz - 1.0)
 
   @spec send_cmd(binary) :: :ok | {:error, term}
   def send_cmd(command) do
