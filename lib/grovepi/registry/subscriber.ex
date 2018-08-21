@@ -9,7 +9,9 @@ defmodule GrovePi.Registry.Subscriber do
   @spec start_link(Registry.registry()) :: Supervisor.on_start()
   def start_link(prefix, opts \\ []) do
     opts = Keyword.put(opts, :id, :subscriber_registry)
-    Registry.start_link(:duplicate, registry(prefix), opts)
+           |> Keyword.put(:keys, :duplicate)
+           |> Keyword.put(:name, registry(prefix))
+    Registry.start_link(opts)
   end
 
   @spec notify_change(atom, GrovePi.Buttons.message()) :: :ok
