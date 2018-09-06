@@ -9,7 +9,7 @@ defmodule GrovePi.IRReflective.DefaultTrigger do
 
   ## Examples
       iex> GrovePi.IRReflective.DefaultTrigger.init([])
-      {:ok, %GrovePi.IRReflective.DefaultTrigger.State{value: 0}}
+      {:ok, %GrovePi.IRReflective.DefaultTrigger.State{value: 1}}
 
       iex> GrovePi.IRReflective.DefaultTrigger.update(0, %{value: 0})
       {:ok, %{value: 0}}
@@ -18,10 +18,10 @@ defmodule GrovePi.IRReflective.DefaultTrigger do
       {:ok, %{value: 1}}
 
       iex> GrovePi.IRReflective.DefaultTrigger.update(0, %{value: 1})
-      {:released, %{value: 0}}
+      {:close, %{value: 0}}
 
       iex> GrovePi.IRReflective.DefaultTrigger.update(1, %{value: 0})
-      {:pressed, %{value: 1}}
+      {:far, %{value: 1}}
   """
 
   defmodule State do
