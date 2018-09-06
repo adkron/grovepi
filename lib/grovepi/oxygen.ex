@@ -1,10 +1,9 @@
 defmodule GrovePi.Oxygen do
   alias GrovePi.Analog
 
-  use GrovePi.Poller, default_trigger: GrovePi.Oxygen.DefaultTrigger,
-  read_type: Analog.adc_level
-
-  @ref_v 5 #reference voltage for converting values
+  use GrovePi.Poller,
+    default_trigger: GrovePi.Oxygen.DefaultTrigger,
+    read_type: Analog.adc_level()
 
   @moduledoc """
   Conveniences for reading from a Oxygen Gas sensor.
@@ -41,5 +40,4 @@ defmodule GrovePi.Oxygen do
   def read_value(prefix, pin) do
     Analog.read(prefix, pin)
   end
-
 end

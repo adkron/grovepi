@@ -6,30 +6,32 @@ defmodule GrovePi.OxygenTest do
   setup %{prefix: prefix} = tags do
     poll_interval = Map.get(tags, :poll_interval, 1)
 
-    {:ok, _} = GrovePi.Oxygen.start_link(@pin,
-                                         poll_interval: poll_interval,
-                                         prefix: prefix,
-                                       )
+    {:ok, _} =
+      GrovePi.Oxygen.start_link(@pin,
+        poll_interval: poll_interval,
+        prefix: prefix
+      )
 
-      {:ok, tags}
+    {:ok, tags}
   end
 
   @tag :capture_log
   test "recovers from I2C error",
-  %{prefix: prefix, board: board} do
+       %{prefix: prefix, board: board} do
     GrovePi.Oxygen.subscribe(@pin, :changed, prefix)
+
     GrovePi.I2C.add_responses(board, [
-                                {:error, :i2c_write_failed},
-                                @read_1,
-                                @read_2,
-                              ])
+      {:error, :i2c_write_failed},
+      @read_1,
+      @read_2
+    ])
 
     assert_receive {@pin, :changed, _}, 300
   end
 
   @tag poll_interval: 1_000_000
   test "reading gets from the grovepi board",
-  %{prefix: prefix, board: board} do
+       %{prefix: prefix, board: board} do
     GrovePi.I2C.add_responses(board, [@read_1, @read_2])
 
     assert GrovePi.Oxygen.read(@pin, prefix) == <<1>>
