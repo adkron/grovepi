@@ -16,8 +16,8 @@ defmodule GrovePi.Buzzer do
 
   @type duration :: integer
 
-  alias GrovePi.Registry.Pin
   alias GrovePi.Digital
+  alias GrovePi.Registry.Pin
 
   defmodule State do
     @moduledoc false
