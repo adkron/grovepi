@@ -17,7 +17,7 @@ defmodule GrovePi.Registry.Subscriber do
     Registry.start_link(opts)
   end
 
-  @spec notify_change(atom, GrovePi.Buttons.message()) :: :ok
+  @spec notify_change(atom, message()) :: :ok
   def notify_change(prefix, {pin, event, _} = message) do
     Registry.dispatch(registry(prefix), {pin, event}, fn listeners ->
       for {pid, :ok} <- listeners, do: send(pid, message)

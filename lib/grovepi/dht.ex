@@ -3,7 +3,7 @@ defmodule GrovePi.DHT do
 
   use GrovePi.Poller,
     default_trigger: GrovePi.DHT.DefaultTrigger,
-    read_type: Digital.level()
+    read_type: GrovePi.Digital.level()
 
   @moduledoc """
   Conveniences for reading from a DHT sensor.
