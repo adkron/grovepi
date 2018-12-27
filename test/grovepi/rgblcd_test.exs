@@ -1,7 +1,9 @@
 defmodule GrovePi.RGBLCDTest do
   use ExUnit.Case, async: true
 
-  alias GrovePi.{Board, RGBLCD, I2C}
+  alias GrovePi.Board
+  alias GrovePi.I2C
+  alias GrovePi.RGBLCD
 
   @lcd_cmd 0x80
   @lcd_write 0x40
