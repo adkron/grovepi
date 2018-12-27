@@ -3,7 +3,7 @@ defmodule GrovePi.Button do
 
   use GrovePi.Poller,
     default_trigger: GrovePi.Button.DefaultTrigger,
-    read_type: Digital.level()
+    read_type: GrovePi.Digital.level()
 
   @moduledoc """
   Conveniences for working with a button.
