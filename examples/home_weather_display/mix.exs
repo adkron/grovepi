@@ -1,72 +1,58 @@
-defmodule HomeWeatherDisplay.Mixfile do
+defmodule HomeWeatherDisplay.MixProject do
   use Mix.Project
 
-  @target System.get_env("MIX_TARGET") || "host"
-  Mix.shell.info([:green, """
-  Env
-    MIX_TARGET:   #{@target}
-    MIX_ENV:      #{Mix.env}
-  """, :reset])
+  @all_targets [:rpi, :rpi0, :rpi2, :rpi3, :rpi3a, :bbb, :x86_64]
+
   def project do
-    [app: :home_weather_display,
-     version: "0.1.0",
-     elixir: "~> 1.4.0",
-     target: @target,
-     archives: [nerves_bootstrap: "~> 0.6.0"],
-     deps_path: "deps/#{@target}",
-     build_path: "_build/#{@target}",
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     aliases: aliases(@target),
-     deps: deps()]
-  end
-
-  # Configuration for the OTP application.
-  #
-  # Type `mix help compile.app` for more information.
-  def application, do: application(@target)
-
-  # Specify target specific application configurations
-  # It is common that the application start function will start and supervise
-  # applications which could cause the host to fail. Because of this, we only
-  # invoke HomeWeatherDisplay.start/2 when running on a target.
-  def application("host") do
-    [extra_applications: [:logger]]
-  end
-  def application(_target) do
-    [mod: {HomeWeatherDisplay.Application, []},
-     extra_applications: [:logger]]
-  end
-
-  # Dependencies can be Hex packages:
-  #
-  #   {:my_dep, "~> 0.3.0"}
-  #
-  # Or git/path repositories:
-  #
-  #   {:my_dep, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
-  #
-  # Type "mix help deps" for more examples and options
-  def deps do
     [
+      app: :home_weather_display,
+      version: "0.1.0",
+      elixir: "~> 1.8",
+      archives: [nerves_bootstrap: "~> 1.5"],
+      start_permanent: Mix.env() == :prod,
+      build_embedded: true,
+      aliases: [loadconfig: [&bootstrap/1]],
+      deps: deps()
+    ]
+  end
+
+  # Starting nerves_bootstrap adds the required aliases to Mix.Project.config()
+  # Aliases are only added if MIX_TARGET is set.
+  def bootstrap(args) do
+    Application.start(:nerves_bootstrap)
+    Mix.Task.run("loadconfig", args)
+  end
+
+  # Run "mix help compile.app" to learn about applications.
+  def application do
+    [
+      mod: {HomeWeatherDisplay.Application, []},
+      extra_applications: [:logger, :runtime_tools]
+    ]
+  end
+
+  # Run "mix help deps" to learn about dependencies.
+  defp deps do
+    [
+      # Dependencies for all targets
+      {:nerves, "~> 1.4", runtime: false},
+      {:shoehorn, "~> 0.4"},
+      {:ring_logger, "~> 0.6"},
+      {:toolshed, "~> 0.2"},
       {:grovepi, path: "../.."},
-      {:nerves, "~> 0.5.0", runtime: false}
-    ] ++
-    deps(@target)
-  end
 
-  # Specify target specific dependencies
-  def deps("host"), do: []
-  def deps(target) do
-    [{:nerves_runtime, "~> 0.1.0"},
-     {:"nerves_system_#{target}", "~> 0.11.0", runtime: false}]
-  end
+      # Dependencies for all targets except :host
+      {:nerves_runtime, "~> 0.6", targets: @all_targets},
+      {:nerves_init_gadget, "~> 0.4", targets: @all_targets},
 
-  # We do not invoke the Nerves Env when running on the Host
-  def aliases("host"), do: []
-  def aliases(_target) do
-    ["deps.precompile": ["nerves.precompile", "deps.precompile"],
-     "deps.loadpaths":  ["deps.loadpaths", "nerves.loadpaths"]]
+      # Dependencies for specific targets
+      {:nerves_system_rpi, "~> 1.6", runtime: false, targets: :rpi},
+      {:nerves_system_rpi0, "~> 1.6", runtime: false, targets: :rpi0},
+      {:nerves_system_rpi2, "~> 1.6", runtime: false, targets: :rpi2},
+      {:nerves_system_rpi3, "~> 1.6", runtime: false, targets: :rpi3},
+      {:nerves_system_rpi3a, "~> 1.6", runtime: false, targets: :rpi3a},
+      {:nerves_system_bbb, "~> 2.0", runtime: false, targets: :bbb},
+      {:nerves_system_x86_64, "~> 1.6", runtime: false, targets: :x86_64}
+    ]
   end
-
 end

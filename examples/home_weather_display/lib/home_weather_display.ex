@@ -30,7 +30,7 @@ defmodule HomeWeatherDisplay do
     RGBLCD.set_text(temp)
     RGBLCD.set_cursor(1, 0)
     RGBLCD.write_text(humidity)
-    Logger.info temp <> " " <> humidity
+    Logger.info(temp <> " " <> humidity)
     {:noreply, state}
   end
 
