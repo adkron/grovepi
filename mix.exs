@@ -38,7 +38,7 @@ defmodule GrovePi.Mixfile do
   defp deps do
     [
       {:dialyxir, "~> 1.0.0-rc4", only: [:dev, :test], runtime: false},
-      {:elixir_ale, "~> 1.0"},
+      {:circuits_i2c, "~> 0.3"},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:mix_test_watch, "~> 0.3", only: :dev, runtime: false},
       {:credo, "~> 0.7", only: [:dev, :test]}

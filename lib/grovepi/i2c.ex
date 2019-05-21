@@ -5,21 +5,15 @@ defmodule GrovePi.I2C do
 
   alias GrovePi.I2C.{State, Write}
 
-  defmacro __using__(_) do
-    quote do
-      @i2c Application.get_env(:grovepi, :i2c, ElixirALE.I2C)
-    end
-  end
-
   @type i2c_address :: 0..127
 
   def init(args) do
     {:ok, args}
   end
 
-  @spec start_link(binary, i2c_address, [term]) :: {:ok, pid}
-  def start_link(_devname, _address, opts \\ []) do
-    GenServer.start_link(__MODULE__, %State{}, opts)
+  @spec open(binary) :: {:ok, pid}
+  def open(_bus_name) do
+    GenServer.start_link(__MODULE__, %State{}, [])
   end
 
   def add_responses(pid, messages) do
@@ -46,12 +40,12 @@ defmodule GrovePi.I2C do
     GenServer.call(pid, {:get_all_data})
   end
 
-  @spec write(pid, binary) :: :ok
-  def write(pid, message) do
-    GenServer.call(pid, {:write, message})
+  @spec write(pid, i2c_address, binary, list) :: :ok
+  def write(pid, address, message, _opts) do
+    GenServer.call(pid, {:write, address, message})
   end
 
-  def read(pid, len) do
+  def read(pid, _address, len, _opts) do
     GenServer.call(pid, {:read, len})
   end
 
@@ -59,12 +53,8 @@ defmodule GrovePi.I2C do
     GenServer.call(pid, :reset)
   end
 
-  def write_device(pid, address, buffer) do
-    GenServer.call(pid, {:write_device, address, buffer})
-  end
-
-  def handle_call({:write, message}, _from, state) do
-    {:reply, :ok, State.add_input(state, %Write{data: message})}
+  def handle_call({:write, address, message}, _from, state) do
+    {:reply, :ok, State.add_input(state, %Write{address: address, data: message})}
   end
 
   def handle_call({:get_last_write}, _from, state) do
@@ -89,7 +79,7 @@ defmodule GrovePi.I2C do
 
   def handle_call({:read, _len}, _from, state) do
     {message, new_state} = State.pop_last_response(state)
-    {:reply, message, new_state}
+    {:reply, {:ok, message}, new_state}
   end
 
   def handle_call({:add_responses, responses}, _from, state) do
@@ -98,9 +88,5 @@ defmodule GrovePi.I2C do
 
   def handle_call(:reset, _from, _state) do
     {:reply, :ok, %State{}}
-  end
-
-  def handle_call({:write_device, address, data}, _from, state) do
-    {:reply, :ok, State.add_input(state, %Write{address: address, data: data})}
   end
 end
