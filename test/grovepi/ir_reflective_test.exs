@@ -17,11 +17,10 @@ defmodule GrovePi.IRReflectiveTest do
   end
 
   @tag :capture_log
-  test "recovers from I2C error", %{prefix: prefix, board: board} do
+  test "receives message after subscribe", %{prefix: prefix, board: board} do
     GrovePi.IRReflective.subscribe(@pin, :close, prefix)
 
     GrovePi.I2C.add_responses(board, [
-      {:error, :i2c_write_failed},
       @far,
       @close
     ])
