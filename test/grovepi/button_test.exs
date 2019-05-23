@@ -17,11 +17,10 @@ defmodule GrovePi.ButtonTest do
   end
 
   @tag :capture_log
-  test "recovers from I2C error", %{prefix: prefix, board: board} do
+  test "receives message after subscribe", %{prefix: prefix, board: board} do
     GrovePi.Button.subscribe(@pin, :released, prefix)
 
     GrovePi.I2C.add_responses(board, [
-      {:error, :i2c_write_failed},
       @pressed,
       @released
     ])

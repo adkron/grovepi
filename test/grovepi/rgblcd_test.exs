@@ -10,7 +10,7 @@ defmodule GrovePi.RGBLCDTest do
 
   setup do
     board = Board.i2c_name(Default)
-    start_supervised({I2C, ["i2c-1", "address", name: board]})
+    start_supervised({Board, ["i2c-1", "address", name: board]})
     %{board: board, config: RGBLCD.get_default_config()}
   end
 

@@ -1,7 +1,7 @@
 defmodule GrovePi.Board do
   @moduledoc """
   Low-level interface for sending raw requests and receiving responses from a
-  GrovePi hat. Create one of these first and then use one of the other GrovePi
+  GrovePi hat. Automatically started with GrovePi, allows you to use one of the other GrovePi
   modules for interacting with a connected sensor, light, or actuator.
 
   To check that your GrovePi hardware is working, try this:
@@ -13,15 +13,19 @@ defmodule GrovePi.Board do
 
   """
 
-  use GrovePi.I2C
+  use GenServer
+  @i2c Application.get_env(:grovepi, :i2c, Circuits.I2C)
   @i2c_retry_count 2
 
-  @doc """
-  """
+  defstruct address: nil, i2c_bus: nil
+
+  ## Client API
+
   @spec start_link(byte, atom) :: {:ok, pid} | {:error, any}
   def start_link(address, prefix, opts \\ []) when is_integer(address) do
     opts = Keyword.put_new(opts, :name, i2c_name(prefix))
-    @i2c.start_link("i2c-1", address, opts)
+    state = %__MODULE__{address: address}
+    GenServer.start_link(__MODULE__, state, opts)
   end
 
   def i2c_name(prefix) do
@@ -44,7 +48,7 @@ defmodule GrovePi.Board do
   """
   @spec send_request(GenServer.server(), binary) :: :ok | {:error, term}
   def send_request(prefix, message) when byte_size(message) == 4 do
-    send_request_with_retry(i2c_name(prefix), message, @i2c_retry_count)
+    GenServer.call(i2c_name(prefix), {:write, message})
   end
 
   def send_request(message) do
@@ -56,40 +60,112 @@ defmodule GrovePi.Board do
   not normally called directly.
   """
   @spec get_response(atom, integer) :: binary | {:error, term}
-  def get_response(prefix, len) do
-    get_response_with_retry(i2c_name(prefix), len, @i2c_retry_count)
+  def get_response(prefix, bytes_to_read) do
+    GenServer.call(i2c_name(prefix), {:read, bytes_to_read})
   end
 
   @spec get_response(integer) :: binary | {:error, term}
-  def get_response(len) do
-    get_response(Default, len)
+  def get_response(bytes_to_read) do
+    get_response(Default, bytes_to_read)
   end
 
   @doc """
   Write directly to a device on the I2C bus. This is used for sensors
   that are not controlled by the GrovePi's microcontroller.
   """
-  def i2c_write_device(address, buffer) do
-    @i2c.write_device(i2c_name(Default), address, buffer)
+  def i2c_write_device(address, message) do
+    GenServer.call(i2c_name(Default), {:write_device, address, message})
   end
 
-  # The GrovePi has intermittent I2C communication failures. These
-  # are usually harmless, so automatically retry.
-  defp send_request_with_retry(_board, _message, 0), do: {:error, :too_many_retries}
+  #### test helper functions
 
-  defp send_request_with_retry(board, message, retries_left) do
-    case @i2c.write(board, message) do
-      {:error, _} -> send_request_with_retry(board, message, retries_left - 1)
-      response -> response
-    end
+  def add_responses(board, messages) do
+    GenServer.call(board, {:add_responses, messages})
   end
 
-  defp get_response_with_retry(_board, _len, 0), do: {:error, :too_many_retries}
+  def add_response(board, message) do
+    add_responses(board, [message])
+  end
 
-  defp get_response_with_retry(board, len, retries_left) do
-    case @i2c.read(board, len) do
-      {:error, _} -> get_response_with_retry(board, len, retries_left - 1)
-      response -> response
-    end
+  def get_last_write(board) do
+    GenServer.call(board, {:get_last_write})
+  end
+
+  def get_last_write_data(board) do
+    GenServer.call(board, {:get_last_write_data})
+  end
+
+  def get_all_writes(board) do
+    GenServer.call(board, {:get_all_writes})
+  end
+
+  def get_all_data(board) do
+    GenServer.call(board, {:get_all_data})
+  end
+
+  def reset(board) do
+    GenServer.call(board, :reset)
+  end
+
+  ## Server Callbacks
+
+  @impl true
+  def init(state) do
+    {:ok, state, {:continue, :open_i2c}}
+  end
+
+  @impl true
+  def handle_continue(:open_i2c, state) do
+    {:ok, ref} = @i2c.open("i2c-1")
+    {:noreply, %{state | i2c_bus: ref}}
+  end
+
+  @impl true
+  def handle_call({:write, message}, _from, state) do
+    reply = @i2c.write(state.i2c_bus, state.address, message, retries: @i2c_retry_count)
+    {:reply, reply, state}
+  end
+
+  @impl true
+  def handle_call({:write_device, address, message}, _from, state) do
+    reply = @i2c.write(state.i2c_bus, address, message, retries: @i2c_retry_count)
+    {:reply, reply, state}
+  end
+
+  @impl true
+  def handle_call({:read, bytes_to_read}, _from, state) do
+    reply =
+      case(@i2c.read(state.i2c_bus, state.address, bytes_to_read, retries: @i2c_retry_count)) do
+        {:ok, response} -> response
+        {:error, error} -> {:error, error}
+      end
+
+    {:reply, reply, state}
+  end
+
+  ### test helper callbacks
+
+  def handle_call({:get_last_write}, _from, state) do
+    {:reply, @i2c.get_last_write(state.i2c_bus), state}
+  end
+
+  def handle_call({:get_last_write_data}, _from, state) do
+    {:reply, @i2c.get_last_write_data(state.i2c_bus), state}
+  end
+
+  def handle_call({:get_all_writes}, _from, state) do
+    {:reply, @i2c.get_all_writes(state.i2c_bus), state}
+  end
+
+  def handle_call({:get_all_data}, _from, state) do
+    {:reply, @i2c.get_all_data(state.i2c_bus), state}
+  end
+
+  def handle_call({:add_responses, responses}, _from, state) do
+    {:reply, @i2c.add_responses(state.i2c_bus, responses), state}
+  end
+
+  def handle_call(:reset, _from, state) do
+    {:reply, @i2c.reset(state.i2c_bus), state}
   end
 end
