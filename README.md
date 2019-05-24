@@ -17,10 +17,10 @@ def deps do
 end
 ```
 
-The `grovepi` library uses [elixir_ale][ale] for I2C communication to the
+The `grovepi` library uses [Elixir Circuits - I2C][circuits_i2c] for I2C communication to the
 GrovePi+. This only works on Raspberry Pi computers. If you're working on
 another platform, a stub is available for debugging and testing. When building
-`grovepi` standalone, be aware that `elixir_ale` is only used for `MIX_ENV=prod`
+`grovepi` standalone, be aware that `circuits_i2c` is only used for `MIX_ENV=prod`
 builds. To use the stub in your own programs, add the following to your
 configuration:
 
@@ -66,7 +66,7 @@ can run `mix test.watch`.
 
 [dexter]: https://www.dexterindustries.com/grovepi/
 [nerves_grove]: https://github.com/bendiken/nerves_grove/
-[ale]: https://hex.pm/packages/elixir_ale
+[circuits_i2c]: https://hex.pm/packages/circuits_i2c
 [docs]: https://hexdocs.pm/grovepi
 [fork]: https://help.github.com/fork-a-repo/
 [branch]: https://help.github.com/articles/creating-and-deleting-branches-within-your-repository/
